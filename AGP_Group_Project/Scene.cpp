@@ -21,6 +21,11 @@ Scene::Scene()
 	shader.setProjection(shaderID[0], projection);
 	shader.setMVP(shaderID[0], mvStack.top());
 
+	//Particle Shader
+	shaderID[1] = shader.init("Particle.vert", "Particle.frag");
+	shader.setProjection(shaderID[1], projection);
+	shader.setMVP(shaderID[1], mvStack.top());
+
 	//init initialises all game objects and pushes them all into a vector for passing to the renderer.
 	init();
 }
@@ -31,6 +36,8 @@ void Scene::init()
 {
 	loadGroundAndWalls();
 
+	//particle effect
+	particleTest = new ParticleEffect(100);
 
 
 }
@@ -79,6 +86,11 @@ void Scene::draw()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//update and draw particles
+	glUseProgram(shaderID[1]);
+	particleTest->update();
+	particleTest->draw();
 
 	renderer->draw(gameObjects, mvStack);
 

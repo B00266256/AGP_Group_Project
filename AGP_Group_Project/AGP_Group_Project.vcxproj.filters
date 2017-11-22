@@ -42,6 +42,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -65,12 +68,21 @@
     <ClInclude Include="Renderer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.frag">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="phong-tex.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Particle.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Particle.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

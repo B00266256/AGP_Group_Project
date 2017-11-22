@@ -9,6 +9,8 @@
 #include "rt3d.h"
 #include <stack>
 #include "Renderer.h"
+#include "ParticleEffect.h"
+
 using namespace std;
 #define DEG_TO_RADIAN 0.017453293
 
@@ -56,6 +58,8 @@ private:
 	glm::vec3 at;
 	glm::vec3 up;
 	glm::mat4 projection;
+
+	ParticleEffect* particleTest;
 
 
 };
