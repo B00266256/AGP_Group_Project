@@ -8,7 +8,7 @@ Scene::Scene()
 	mvStack.push(modelview);
 
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	eye = glm::vec3(-15.0f, 5.0f, 10.0f);
+	eye = glm::vec3(-15.0f, 5.0f, -20);
 	at = glm::vec3(0.0f, 1.0f, -1.0f);
 	mvStack.top() = glm::lookAt(eye, at, up);
 
@@ -37,7 +37,11 @@ void Scene::init()
 	loadGroundAndWalls();
 
 	//particle effect
+	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+
 	particleTest = new ParticleEffect(100);
+	particleTexture = TextureUtils::loadBitmap("smoke.bmp");
 
 
 }
@@ -79,6 +83,7 @@ void Scene::update()
 }
 
 //send out pile of game object to the renderer along with the model view stack
+
 void Scene::draw()
 {
 	// clear the screen
@@ -86,13 +91,38 @@ void Scene::draw()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_BACK);
+
+	
+	//Game Objects
+	renderer->draw(gameObjects, mvStack);
+
 
 	//update and draw particles
 	glUseProgram(shaderID[1]);
-	particleTest->update();
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
+	//update particle shader
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(),glm::vec3(0,10,0));
+	shader.setProjection(shaderID[1], projection);
+	shader.setMVP(shaderID[1], mvStack.top());
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glDepthMask(0);
+	//draw
 	particleTest->draw();
 
-	renderer->draw(gameObjects, mvStack);
+	glDisable(GL_BLEND);
+	glDepthMask(1);
+	glDepthMask(GL_TRUE);
+	//update
+	particleTest->update();
+
+
+	mvStack.pop();
+
+
 
 	
 }
