@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <ctime>
 #include <cstdlib>
 #include "rt3d.h"
 
@@ -15,18 +16,18 @@ public:
 	int getNoP() { return NoP; }
 
 	std::vector<glm::vec3> getPositions(void) const { return positions; }
-	std::vector<glm::vec3> getColours(void) const { return colours; }
-	std::vector<glm::vec3> getVel(void) const { return velocity; }
+	std::vector<glm::vec4> getColours(void) const { return colours; }
+	std::vector<glm::vec3> getVel(void) const { return velocitys; }
 
 	void update(void);
 	void draw(void);
 
 private:
 	std::vector<glm::vec3> positions;
-	std::vector<glm::vec3> colours;
-	std::vector<glm::vec3> velocity;
+	std::vector<glm::vec4> colours;
+	std::vector<glm::vec3> velocitys;
 
-	std::vector<glm::vec3> acceleration;
+	glm::vec3 accel;
 
 	int NoP;
 	GLuint vao[1];

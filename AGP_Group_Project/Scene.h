@@ -60,7 +60,7 @@ private:
 	glm::mat4 projection;
 
 	ParticleEffect* particleTest;
-
+	GLuint particleTexture;
 
 };
 #endif
