@@ -206,6 +206,22 @@ GLuint createMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat*
 	return VAO;
 }
 
+
+void setSpotlightUniforms(const GLuint program, lightStruct spotLight, const GLfloat * direction)
+{
+
+	GLuint uniformIndex = glGetUniformLocation(program, "spotLight.ambient");
+	glUniform4fv(uniformIndex, 1, spotLight.ambient);
+	uniformIndex = glGetUniformLocation(program, "spotLight.diffuse");
+	glUniform4fv(uniformIndex, 1, spotLight.diffuse);
+	uniformIndex = glGetUniformLocation(program, "spotLight.specular");
+	glUniform4fv(uniformIndex, 1, spotLight.specular);
+
+	uniformIndex = glGetUniformLocation(program, "spotlightDirection");
+	glUniform3fv(uniformIndex, 1, direction);
+}
+
+
 GLuint createMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours, 
 	const GLfloat* normals, const GLfloat* texcoords) {
 	return createMesh(numVerts, vertices, colours, normals, texcoords, 0, nullptr);

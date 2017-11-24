@@ -27,6 +27,11 @@ void Shader::setLight(GLuint shaderID, rt3d::lightStruct light)
 	rt3d::setLight(shaderID, light);
 }
 
+void Shader::setSpotlight(const GLuint program, rt3d::lightStruct spotLight, const GLfloat * direction)
+{
+	rt3d::setSpotlightUniforms(program, spotLight, direction);
+}
+
 void Shader::setMaterial(GLuint shaderID, rt3d::materialStruct material)
 {
 	rt3d::setMaterial(shaderID, material);

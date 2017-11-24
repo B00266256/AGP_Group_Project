@@ -68,11 +68,9 @@ void ParticleEffect::update()
 			{
 				positions[i].y = -9.2;
 
-				velocitys[i] = -velocitys[i] * glm::vec3(0.2);
+				velocitys[i] = -velocitys[i] * glm::vec3(0.8);
 
 				//positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel;
-
-		
 				
 			}
 		}

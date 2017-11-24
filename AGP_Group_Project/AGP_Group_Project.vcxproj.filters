@@ -85,5 +85,11 @@
     <None Include="Particle.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ThreeLightSupport.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ThreeLightSupport.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

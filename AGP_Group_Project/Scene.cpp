@@ -14,12 +14,38 @@ Scene::Scene()
 
 	renderer = new Renderer();
 
+	// light attenuation
+	 attConstant = 1.0f;
+	 attLinear = 0.05f;
+	 attQuadratic = 0.01f;
+
+	  angle1 = 20;														//define the spotlights cone										
+	  angle2 = 25;
+
+	spotLightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+	spotLightPos = glm::vec4(-15.0f, 5.0f, -20, 1.0f);
+
 	//Phong tex shader program
 	shaderID[0] = shader.init("phong-tex.vert", "phong-tex.frag");
 	shader.setLight(shaderID[0], light);
 	shader.setMaterial(shaderID[0], material);
 	shader.setProjection(shaderID[0], projection);
 	shader.setMVP(shaderID[0], mvStack.top());
+	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+
+
+	//spotlight angle updates
+	GLuint uniformIndex = glGetUniformLocation(shaderID[0], "angle1");
+	glUniform1i(uniformIndex, angle1);
+	uniformIndex = glGetUniformLocation(shaderID[0], "angle2");
+	glUniform1i(uniformIndex, angle2);
+
+	uniformIndex = glGetUniformLocation(shaderID[0], "attConst");
+	glUniform1f(uniformIndex, attConstant);
+	uniformIndex = glGetUniformLocation(shaderID[0], "attLinear");
+	glUniform1f(uniformIndex, attLinear);
+	uniformIndex = glGetUniformLocation(shaderID[0], "attQuadratic");
+	glUniform1f(uniformIndex, attQuadratic);
 
 	//Particle Shader
 	shaderID[1] = shader.init("Particle.vert", "Particle.frag");
@@ -38,9 +64,10 @@ void Scene::init()
 
 	//particle effect
 	glEnable(GL_POINT_SPRITE);
+	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	particleTest = new ParticleEffect(100);
+	particleTest = new ParticleEffect(4);
 	particleTexture = TextureUtils::loadBitmap("smoke.bmp");
 
 
