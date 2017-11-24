@@ -1,12 +1,20 @@
 #include "GameObject.h"
 
-
-
 GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota)
 {
 	position = pos;
 	scaling = scale;
 	rotation = rota;
+	degrees = 180;
+}
+
+
+GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota, int deg)
+{
+	position = pos;
+	scaling = scale;
+	rotation = rota;
+	degrees = deg;
 }
 
 void GameObject::addObjectInstance(glm::vec3 pos)
@@ -51,6 +59,7 @@ void GameObject::setShader(GLuint shaderID)
 GLuint GameObject::getTexID() { return texture; }
 GLuint GameObject::getMeshID() { return mesh; }
 GLuint GameObject::getShader() { return shader; }
+int GameObject::getDegrees() { return degrees; }
 
 glm::vec3 GameObject::getPos(int i)
 { 

@@ -12,6 +12,7 @@ class GameObject
 {
 public:
 	GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota);
+	GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota, int deg);
 
 	void addObjectInstance(glm::vec3 pos);
 
@@ -31,6 +32,7 @@ public:
 
 	int getInstanceCount();
 	int getMeshIndexCount();
+	int getDegrees();
 	
 private:
 	rt3d::materialStruct material;
@@ -47,6 +49,7 @@ private:
 	GLuint shader;
 
 	int meshIndexCount;
+	int degrees;
 
 };
 

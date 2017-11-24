@@ -147,42 +147,56 @@ void Scene::loadGroundAndWalls()
 	gameObjects.push_back(groundPlane);
 
 	//Roof Planes
-	GameObject *roofPlane = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
+	GameObject *roofPlane = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(0.0f, 0.0f, 1.0f), -30);
 	roofPlane->setTexture("concrete.bmp");
 	roofPlane->setMaterial(material);
 	roofPlane->setMesh("cube.obj");
 	roofPlane->setShader(shaderID[0]);
-	roofPlane->addObjectInstance(glm::vec3(0, 20, 0));
-	roofPlane->addObjectInstance(glm::vec3(0, 20, -40));
-	roofPlane->addObjectInstance(glm::vec3(0, 20, -80));
-	roofPlane->addObjectInstance(glm::vec3(-40, 20, 0));
-	roofPlane->addObjectInstance(glm::vec3(-40, 20, -40));
-	roofPlane->addObjectInstance(glm::vec3(-40, 20, -80));
+	roofPlane->addObjectInstance(glm::vec3(2.5, 30, 0));
+	roofPlane->addObjectInstance(glm::vec3(2.5, 30, -40));
+	roofPlane->addObjectInstance(glm::vec3(2.5, 30, -80));
 
 	gameObjects.push_back(roofPlane);
 
+	//Roof Planes
+	GameObject *roofPlane2 = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(0.0f, 0.0f, 1.0f), 30);
+	roofPlane2->setTexture("concrete.bmp");
+	roofPlane2->setMaterial(material);
+	roofPlane2->setMesh("cube.obj");
+	roofPlane2->setShader(shaderID[0]);
+	roofPlane2->addObjectInstance(glm::vec3(-42.5, 30, 0));
+	roofPlane2->addObjectInstance(glm::vec3(-42.5, 30, -40));
+	roofPlane2->addObjectInstance(glm::vec3(-42.5, 30, -80));
+
+	gameObjects.push_back(roofPlane2);
 
 	//Left Wall Planes
-	GameObject *walls = new GameObject(glm::vec3(0, 0, 0), glm::vec3(0.3, 10, 20), glm::vec3(NULL, NULL, NULL));
-	walls->setTexture("brickwall.bmp");
+	GameObject *walls = new GameObject(glm::vec3(0, 0, 0), glm::vec3(0.3, 10, 10), glm::vec3(NULL, NULL, NULL));
+	walls->setTexture("brickwall-normalmap.bmp");
 	walls->setMaterial(material);
 	walls->setMesh("cube.obj");
 	walls->setShader(shaderID[0]);
-	walls->addObjectInstance(glm::vec3(-60, 10, 0));
-	walls->addObjectInstance(glm::vec3(-60, 10, -40));
-	walls->addObjectInstance(glm::vec3(-60, 10, -80));
+	walls->addObjectInstance(glm::vec3(-60, 10, 10));
+	walls->addObjectInstance(glm::vec3(-60, 10, -10));
+	walls->addObjectInstance(glm::vec3(-60, 10, -30));
+	walls->addObjectInstance(glm::vec3(-60, 10, -50));
+	walls->addObjectInstance(glm::vec3(-60, 10, -70));
+	walls->addObjectInstance(glm::vec3(-60, 10, -90));
 
 	gameObjects.push_back(walls);
 
 	//right Wall Planes
-	GameObject *walls2 = new GameObject(glm::vec3(0, 0, 0), glm::vec3(0.3, 10, 20), glm::vec3(0, 1, 0));
+	GameObject *walls2 = new GameObject(glm::vec3(0, 0, 0), glm::vec3(0.3, 10, 10), glm::vec3(0, 1, 0));
 	walls2->setTexture("brickwall.bmp");
 	walls2->setMaterial(material);
 	walls2->setMesh("cube.obj");
 	walls2->setShader(shaderID[0]);
-	walls2->addObjectInstance(glm::vec3(20, 10, 0));
-	walls2->addObjectInstance(glm::vec3(20, 10, -40));
-	walls2->addObjectInstance(glm::vec3(20, 10, -80));
+	walls2->addObjectInstance(glm::vec3(20, 10, 10));
+	walls2->addObjectInstance(glm::vec3(20, 10, -10));
+	walls2->addObjectInstance(glm::vec3(20, 10, -30));
+	walls2->addObjectInstance(glm::vec3(20, 10, -50));
+	walls2->addObjectInstance(glm::vec3(20, 10, -70));
+	walls2->addObjectInstance(glm::vec3(20, 10, -90));
 
 	gameObjects.push_back(walls2);
 
@@ -197,6 +211,11 @@ void Scene::loadGroundAndWalls()
 	walls3->addObjectInstance(glm::vec3(-10, 10, -100));
 	walls3->addObjectInstance(glm::vec3(10, 10, -100));
 
+	walls3->addObjectInstance(glm::vec3(-50, 30, -100));
+	walls3->addObjectInstance(glm::vec3(-30, 30, -100));
+	walls3->addObjectInstance(glm::vec3(-10, 30, -100));
+	walls3->addObjectInstance(glm::vec3(10, 30, -100));
+
 	gameObjects.push_back(walls3);
 
 	//Rear Wall Planes
@@ -209,6 +228,11 @@ void Scene::loadGroundAndWalls()
 	walls4->addObjectInstance(glm::vec3(-30, 10, 20));
 	walls4->addObjectInstance(glm::vec3(-10, 10, 20));
 	walls4->addObjectInstance(glm::vec3(10, 10, 20));
+
+	walls4->addObjectInstance(glm::vec3(-50, 30, 20));
+	walls4->addObjectInstance(glm::vec3(-30, 30, 20));
+	walls4->addObjectInstance(glm::vec3(-10, 30, 20));
+	walls4->addObjectInstance(glm::vec3(10, 30, 20));
 
 	gameObjects.push_back(walls4);
 
