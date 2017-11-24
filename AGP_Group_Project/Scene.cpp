@@ -67,7 +67,7 @@ void Scene::init()
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	particleTest = new ParticleEffect(4);
+	particleTest = new ParticleEffect(20);
 	particleTexture = TextureUtils::loadBitmap("smoke.bmp");
 
 

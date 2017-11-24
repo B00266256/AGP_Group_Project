@@ -1,4 +1,15 @@
 #include "ParticleEffect.h"
+#include <math.h>
+
+#define DEG_TO_RADIAN 0.017453293
+
+int rando(int max, int min) //Pass in range
+{
+	srand(time(NULL));  //Changed from rand(). srand() seeds rand for you.
+	int random = rand() % max + min;
+	return random;
+}
+
 
 ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 {
@@ -6,17 +17,27 @@ ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 	srand(time(0));
 	accel = glm::vec3(0, -9.8, 0);
 
-	float alpha = 0.0;
-
 	for (int i = 0; i < NoP; i++)
 	{
-		positions.push_back(glm::vec3(-15, 2, -35));
-		velocitys.push_back(glm::vec3(0, 10, 0));
-		colours.push_back(glm::vec4(0, 0, 0, 1));
+		float circleSegment = (360.0f / NoP);
+		float angle = (circleSegment * i);
+		float initialSpeed = 1.5;
+		glm::vec3 initialPosition = glm::vec3(-15, 2, -30);
+
+		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
+
+
+		positions.push_back(initialPosition);
+		velocitys.push_back(launchVelocity);
+		colours.push_back(glm::vec3(0, 0, 1));
+
+		lifespan.push_back(450);
+
+		std::cout << rando(1, 3) << std::endl;
 
 	}
-	//init vao/vbo
 
+	//init vao/vbo
 	glGenVertexArrays(1, vao);
 	glGenBuffers(2, vbo);
 	glBindVertexArray(vao[0]); // bind VAO 0 as current object
@@ -49,11 +70,21 @@ void ParticleEffect::update()
 {
 
 	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-	
+	float incre = 0.0;
 		//Verlet Solver
 		
+
 		for (int i = 0; i < NoP; i++)
 		{
+
+			if (lifespan[i] == 0)
+				{
+					positions[i] = glm::vec3(0, -100, 0);
+				}	
+			else
+				{
+					lifespan[i] -= 1;
+				}
 
 			if (positions[i].y >= -9.5)
 			{
@@ -61,20 +92,17 @@ void ParticleEffect::update()
 				positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel;
 				//Step 2
 				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel);
-				//Step 4
-				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel);
-			} 
+
+			}
 			else
 			{
-				positions[i].y = -9.2;
-
-				velocitys[i] = -velocitys[i] * glm::vec3(0.8);
-
-				//positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel;
 				
+				positions[i].y = -9.4;
+				velocitys[i] = -velocitys[i] * (glm::vec3(0, 0.2, 0));
+
 			}
 		}
-
+	
 		start = std::clock();
 }
 
