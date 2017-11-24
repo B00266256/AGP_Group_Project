@@ -148,7 +148,7 @@ void Scene::loadGroundAndWalls()
 
 	//Roof Planes
 	GameObject *roofPlane = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(0.0f, 0.0f, 1.0f), -30);
-	roofPlane->setTexture("concrete.bmp");
+	roofPlane->setTexture("ironroof.bmp");
 	roofPlane->setMaterial(material);
 	roofPlane->setMesh("cube.obj");
 	roofPlane->setShader(shaderID[0]);
@@ -160,7 +160,7 @@ void Scene::loadGroundAndWalls()
 
 	//Roof Planes
 	GameObject *roofPlane2 = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(0.0f, 0.0f, 1.0f), 30);
-	roofPlane2->setTexture("concrete.bmp");
+	roofPlane2->setTexture("ironroof.bmp");
 	roofPlane2->setMaterial(material);
 	roofPlane2->setMesh("cube.obj");
 	roofPlane2->setShader(shaderID[0]);
