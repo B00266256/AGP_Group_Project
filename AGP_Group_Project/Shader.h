@@ -17,6 +17,8 @@ public:
 	void setMaterial(GLuint shaderID, rt3d::materialStruct material);
 	void setAttenuation(GLuint shaderID, float, float, float);
 	void setProjection(GLuint shaderID, glm::mat4 projection);
+
+	void setSpotlight(const GLuint program, rt3d::lightStruct spotLight, const GLfloat * direction);
 	
 
 private:

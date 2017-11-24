@@ -32,12 +32,31 @@ public:
 	void loadGroundAndWalls();
 
 private:
+
+	// light attenuation
+	float attConstant;
+	float attLinear;
+	float attQuadratic;
+
 	rt3d::lightStruct light = {
-		{ 0.3f, 0.3f, 0.3f, 1.0f }, // ambient
+		{ 1.0f, 1.0f, 1.0f, 1.0f }, // ambient
 		{ 1.0f, 1.0f, 1.0f, 1.0f }, // diffuse
 		{ 1.0f, 1.0f, 1.0f, 1.0f }, // specular
-		{ -10.0f, 10.0f, 10.0f, 1.0f }  // position
+		{ -15.0f, 5.0f, -30, 1.0f }  // position
 	};
+
+	//Spot light
+	rt3d::lightStruct spotLight = {
+		{ 0.01f, 0.01f, 0.01f, 1.0f },			// ambient
+		{ 1.0f, 0.8f, 0.8f, 0.8f },				// diffuse
+		{ 0.8f, 0.8f, 0.8f, 0.8f },				// specular
+		{ -5.0f, 3.0f, -11.0f, 1.0f }			// position
+	};
+
+	glm::vec4 spotLightPos;
+	glm::vec3 spotLightDirection;
+	int angle1;												
+	int angle2;
 
 	rt3d::materialStruct material = {
 		{ 0.2f, 0.2f, 0.2f, 1.0f }, // ambient

@@ -53,6 +53,10 @@ namespace rt3d {
 	void drawIndexedMesh(const GLuint mesh, const GLuint indexCount, const GLuint primitive);
 
 	void updateMesh(const GLuint mesh, const unsigned int bufferType, const GLfloat *data, const GLuint size);
+
+
+	//new 	
+	void setSpotlightUniforms(const GLuint program, lightStruct spotLight, const GLfloat * direction);
 }
 
 #endif
