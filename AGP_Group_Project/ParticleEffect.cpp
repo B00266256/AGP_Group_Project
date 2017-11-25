@@ -5,7 +5,7 @@
 
 int rando(int max, int min) //Pass in range
 {
-	srand(time(NULL));  //Changed from rand(). srand() seeds rand for you.
+	srand(time(0));  //Changed from rand(). srand() seeds rand for you.
 	int random = rand() % max + min;
 	return random;
 }
@@ -15,25 +15,20 @@ ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 {
 	//init values
 	srand(time(0));
-	accel = glm::vec3(0, -9.8, 0);
+	emitPosition = glm::vec3(-15, 10, -30);
+	bounceValue = glm::vec3(0, 0.2, 0);
+	iterator = 0;
 
 	for (int i = 0; i < NoP; i++)
 	{
-		float circleSegment = (360.0f / NoP);
-		float angle = (circleSegment * i);
-		float initialSpeed = 1.5;
-		glm::vec3 initialPosition = glm::vec3(-15, 2, -30);
+	
+		positions.push_back(emitPosition);
+		velocitys.push_back(glm::vec3(0,0,0));
+		colours.push_back(glm::vec4(0, 0, 1, 1));
+		accel.push_back(glm::vec3(0, 0, 0));
+		isAlive.push_back(false);
 
-		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
-
-
-		positions.push_back(initialPosition);
-		velocitys.push_back(launchVelocity);
-		colours.push_back(glm::vec3(0, 0, 1));
-
-		lifespan.push_back(450);
-
-		std::cout << rando(1, 3) << std::endl;
+		lifespan.push_back(800);
 
 	}
 
@@ -50,8 +45,8 @@ ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 	 
 									  // Colours data in attribute 1, 3 floats per vertex
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]); // bind VBO for colours
-	glBufferData(GL_ARRAY_BUFFER, NoP  * sizeof(glm::vec4), colours.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBufferData(GL_ARRAY_BUFFER, NoP  * sizeof(glm::vec4), colours.data(), GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);    // Enable attribute index 1
 	glBindVertexArray(0);
 }
@@ -66,41 +61,89 @@ ParticleEffect::~ParticleEffect()
 
 std::clock_t start = 0;
 
-void ParticleEffect::update()
-{
+int k;
 
-	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-	float incre = 0.0;
-		//Verlet Solver
+
+void ParticleEffect::emitParticle()
+{
+	//emit the next particle
+	if (iterator != NoP)
+	{
+
+		float circleSegment = (360.0f / NoP);
+		float angle = (circleSegment * iterator);
+		float initialSpeed = rand() % 111 / 20;
+		glm::vec3 initialPosition = emitPosition;
+
+		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
+
+		positions[iterator] = initialPosition;
+		velocitys[iterator] = glm::vec3(launchVelocity);
+		accel[iterator] = glm::vec3(0, -80, 0);
+		isAlive[iterator] = true;
+		lifespan[iterator] = 800;
+
+		//set 50% of particle slightly lower alpha values. Very messy, sorry not sorry.
+		if (NULL)
+			k = 0;
+
+		if (k == 1)
+		{
+			colours[iterator] = glm::vec4(0.8, 0.8, 1.0, 0.6);
+			k = 0;
+		}
+		else
+		{
+			colours[iterator] = glm::vec4(0.5, 0.5, 0.8, 0.5);
+			k = 1;
+		}
+
+
+		iterator++;
+	}
+	else
+	{	//we've emitted all particles(NoP), start re-emitting from particle 0
+		iterator = 0;
+	}
 		
 
+}
+
+void ParticleEffect::update()
+{
+	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+	
+
+	//initialise next particle
+	emitParticle();
+		
 		for (int i = 0; i < NoP; i++)
 		{
-
-			if (lifespan[i] == 0)
+			
+				//if particle has expiredhas reached end of life mark as dead
+				if (lifespan[i] <= 0)
 				{
-					positions[i] = glm::vec3(0, -100, 0);
-				}	
-			else
+					isAlive[i] = false;
+				}
+				else if(lifespan[i] != 0 && isAlive[i])
 				{
 					lifespan[i] -= 1;
 				}
+			
 
-			if (positions[i].y >= -9.5)
-			{
-				//Step 1
-				positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel;
-				//Step 2
-				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel);
+			// If not hit the ground yet and marked as alive
+			if (positions[i].y >= -9.5 && isAlive[i])
+			{		
+					positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel[i];
 
+					velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel[i]);	
 			}
 			else
-			{
-				
+			{	//Particle has hit the ground - bounce partiicle
 				positions[i].y = -9.4;
-				velocitys[i] = -velocitys[i] * (glm::vec3(0, 0.2, 0));
-
+				velocitys[i] = -velocitys[i] * (bounceValue);
 			}
+	
 		}
 	
 		start = std::clock();
@@ -122,7 +165,22 @@ void ParticleEffect::draw()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);     // Enable attribute index 
 
-									  // Now draw the particles... as easy as this!
+
+	//update colours
+	glBindVertexArray(vao[1]); // bind VAO 0 as current object
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]); // bind VBO 0
+	glBufferData(GL_ARRAY_BUFFER, NoP * sizeof(glm::vec4), colours.data(), GL_DYNAMIC_DRAW);
+
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);     // Enable attribute index 
+
+
+
+
+
+
+
+							  // Now draw the particles... as easy as this!
 	//glPointSize(5);
 	glDrawArrays(GL_POINTS, 0, NoP);
 	glBindVertexArray(0);

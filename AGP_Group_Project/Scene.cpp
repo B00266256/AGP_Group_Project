@@ -2,6 +2,8 @@
 
 Scene::Scene()
 {
+	
+
 	//model view and camera setup
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 0.5f, 2000.0f);
 	glm::mat4 modelview(1.0);
@@ -64,11 +66,12 @@ void Scene::init()
 
 	//particle effect
 	glEnable(GL_POINT_SPRITE);
+
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	particleTest = new ParticleEffect(20);
-	particleTexture = TextureUtils::loadBitmap("smoke.bmp");
+	particleTest = new ParticleEffect(1000);
+	particleTexture = TextureUtils::loadBitmap("rain.bmp");
 
 
 }
@@ -137,14 +140,19 @@ void Scene::draw()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glDepthMask(0);
+	glDisable(GL_CULL_FACE);
+
 	//draw
 	particleTest->draw();
+	particleTest->update();
 
+
+	glEnable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDepthMask(1);
 	glDepthMask(GL_TRUE);
 	//update
-	particleTest->update();
+
 
 
 	mvStack.pop();

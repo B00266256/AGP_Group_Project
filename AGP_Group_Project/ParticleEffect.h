@@ -14,27 +14,33 @@ public:
 	~ParticleEffect();
 
 	int getNoP() { return NoP; }
+	void emitParticle();
 
 	std::vector<glm::vec3> getPositions(void) const { return positions; }
-	std::vector<glm::vec3> getColours(void) const { return colours; }
+	std::vector<glm::vec4> getColours(void) const { return colours; }
 	std::vector<glm::vec3> getVel(void) const { return velocitys; }
+	std::vector<glm::vec3> getAccel(void) const { return accel; }
 	std::vector<float> lifespan;
+	std::vector<bool> isAlive;
 
 	void update(void);
 	void draw(void);
 
 private:
 	std::vector<glm::vec3> positions;
-	std::vector<glm::vec3> colours;
+	std::vector<glm::vec4> colours;
 	std::vector<glm::vec3> velocitys;
+	std::vector<glm::vec3> accel;
 
-	glm::vec3 accel;
+	glm::vec3  emitPosition;
+	glm::vec3 bounceValue;
 
 	int NoP;
 	GLuint vao[1];
 	GLuint vbo[2];
 
 	double dt;
+	int iterator;
 };
 
 
