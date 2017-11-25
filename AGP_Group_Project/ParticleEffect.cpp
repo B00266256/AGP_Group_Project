@@ -13,12 +13,16 @@ int rando(int max, int min) //Pass in range
 
 ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 {
-	//init values
+	// Init values
 	srand(time(0));
 	emitPosition = glm::vec3(-15, 10, -30);
-	bounceValue = glm::vec3(0, 0.2, 0);
+	bounceValue = glm::vec3(0, 0.1, 0);
 	iterator = 0;
+	acceleration = glm::vec3(0, -80, 0);
+	start = 0;
+	lifespan = 750;
 
+	// Initialise all particles
 	for (int i = 0; i < NoP; i++)
 	{
 	
@@ -28,7 +32,7 @@ ParticleEffect::ParticleEffect(int numOfParticles) : NoP(numOfParticles)
 		accel.push_back(glm::vec3(0, 0, 0));
 		isAlive.push_back(false);
 
-		lifespan.push_back(800);
+		age.push_back(lifespan);
 
 	}
 
@@ -59,31 +63,31 @@ ParticleEffect::~ParticleEffect()
 }
 
 
-std::clock_t start = 0;
+
 
 int k;
 
 
 void ParticleEffect::emitParticle()
 {
-	//emit the next particle
+	// Iterate over and re-emit particles
 	if (iterator != NoP)
 	{
-
+		// Calculate
 		float circleSegment = (360.0f / NoP);
 		float angle = (circleSegment * iterator);
 		float initialSpeed = rand() % 111 / 20;
-		glm::vec3 initialPosition = emitPosition;
-
 		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
 
-		positions[iterator] = initialPosition;
-		velocitys[iterator] = glm::vec3(launchVelocity);
-		accel[iterator] = glm::vec3(0, -80, 0);
-		isAlive[iterator] = true;
-		lifespan[iterator] = 800;
 
-		//set 50% of particle slightly lower alpha values. Very messy, sorry not sorry.
+		// Reset particle data
+		positions[iterator] = emitPosition;
+		velocitys[iterator] = glm::vec3(launchVelocity);
+		accel[iterator] = acceleration;
+		isAlive[iterator] = true;
+		age[iterator] = lifespan;
+
+		// Set 50% of particle slightly lower alpha values. Very messy, sorry not sorry.
 		if (NULL)
 			k = 0;
 
@@ -114,32 +118,33 @@ void ParticleEffect::update()
 	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	
 
-	//initialise next particle
+	// Initialise next particle
 	emitParticle();
 		
+		// Iterate over all particles
 		for (int i = 0; i < NoP; i++)
 		{
-			
-				//if particle has expiredhas reached end of life mark as dead
-				if (lifespan[i] <= 0)
-				{
-					isAlive[i] = false;
-				}
-				else if(lifespan[i] != 0 && isAlive[i])
-				{
-					lifespan[i] -= 1;
-				}
+				// If particle has expired has reached end of life mark as dead or decrement lifespan
+			if (age[i] <= 0)
+			{
+				isAlive[i] = false;
+				positions[i] = emitPosition;
+			}
+			else if(age[i] != 0 && isAlive[i])
+			{
+				age[i] -= 1;
+			}
 			
 
-			// If not hit the ground yet and marked as alive
+			// If the particle has not hit the ground yet and alive
 			if (positions[i].y >= -9.5 && isAlive[i])
 			{		
-					positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel[i];
+				positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel[i];
 
-					velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel[i]);	
+				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel[i]);	
 			}
-			else
-			{	//Particle has hit the ground - bounce partiicle
+			else //Particle has hit the ground - bounce partiicle
+			{	
 				positions[i].y = -9.4;
 				velocitys[i] = -velocitys[i] * (bounceValue);
 			}
@@ -170,18 +175,11 @@ void ParticleEffect::draw()
 	glBindVertexArray(vao[1]); // bind VAO 0 as current object
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]); // bind VBO 0
 	glBufferData(GL_ARRAY_BUFFER, NoP * sizeof(glm::vec4), colours.data(), GL_DYNAMIC_DRAW);
-
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);     // Enable attribute index 
 
 
-
-
-
-
-
-							  // Now draw the particles... as easy as this!
-	//glPointSize(5);
+	// Now draw the particles... as easy as this!
 	glDrawArrays(GL_POINTS, 0, NoP);
 	glBindVertexArray(0);
 

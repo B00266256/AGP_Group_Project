@@ -20,7 +20,7 @@ public:
 	std::vector<glm::vec4> getColours(void) const { return colours; }
 	std::vector<glm::vec3> getVel(void) const { return velocitys; }
 	std::vector<glm::vec3> getAccel(void) const { return accel; }
-	std::vector<float> lifespan;
+	std::vector<float> age;
 	std::vector<bool> isAlive;
 
 	void update(void);
@@ -32,15 +32,19 @@ private:
 	std::vector<glm::vec3> velocitys;
 	std::vector<glm::vec3> accel;
 
-	glm::vec3  emitPosition;
-	glm::vec3 bounceValue;
+	glm::vec3  emitPosition;				//launch position (sprinkler head)
+	glm::vec3 bounceValue;					// how much the velocity gets dampened when hitting the ground
+	glm::vec3 acceleration;					// Applied to particles that are alive
+	int lifespan;
 
 	int NoP;
 	GLuint vao[1];
 	GLuint vbo[2];
 
+	int iterator;							//iterates over all the particles when emitting them
+
+	std::clock_t start;
 	double dt;
-	int iterator;
 };
 
 
