@@ -6,12 +6,14 @@
 #include "TextureUtils.h"
 #include "rt3dObjLoader.h"
 #include <vector>
+#include "AABB.h"
 using namespace std;
 
 class GameObject
 {
 public:
 	GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota);
+	void initAABB();
 
 	void addObjectInstance(glm::vec3 pos);
 
@@ -19,7 +21,6 @@ public:
 	void setMaterial(rt3d::materialStruct mat);
 	void setMesh(char* objectFile);
 	void setShader(GLuint shaderID);
-
 
 	GLuint getTexID();
 	GLuint getMeshID();
@@ -29,14 +30,22 @@ public:
 	glm::vec3 getScaling();
 	glm::vec3 getRotate();
 
+	glm::vec3 getMin();
+	glm::vec3 getMax();
+
+	vector<GLfloat> getVerts() { return verts; }
+
 	int getInstanceCount();
 	int getMeshIndexCount();
 	
 private:
+	AABB* aabb;
 	rt3d::materialStruct material;
 
 	vector<glm::vec3> positions;
 	int numberOfInstances;
+
+	vector<GLfloat> verts;
 
 	glm::vec3 position;
 	glm::vec3 scaling;

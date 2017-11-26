@@ -2,6 +2,8 @@
 
 Scene::Scene()
 {
+	
+
 	//model view and camera setup
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 0.5f, 2000.0f);
 	glm::mat4 modelview(1.0);
@@ -15,12 +17,13 @@ Scene::Scene()
 	renderer = new Renderer();
 
 	// light attenuation
-	 attConstant = 1.0f;
-	 attLinear = 0.05f;
-	 attQuadratic = 0.01f;
+	attConstant = 1.0f;
+	attLinear = 0.05f;
+	attQuadratic = 0.01f;
 
-	  angle1 = 20;														//define the spotlights cone										
-	  angle2 = 25;
+	//define the spotlights cone		
+	angle1 = 20;																						
+	angle2 = 25;
 
 	spotLightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 	spotLightPos = glm::vec4(-15.0f, 5.0f, -20, 1.0f);
@@ -60,15 +63,19 @@ Scene::Scene()
 
 void Scene::init()
 {
-	loadGroundAndWalls();
+	
 
 	//particle effect
 	glEnable(GL_POINT_SPRITE);
+
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	particleTest = new ParticleEffect(20);
-	particleTexture = TextureUtils::loadBitmap("smoke.bmp");
+	Sprinkler = new ParticleEffect(1000, glm::vec3(-15, 10, -30));
+	particleTexture = TextureUtils::loadBitmap("rain.bmp");
+
+	//Creates and pushes all the objects representing the building
+	loadGroundAndWalls();
 
 
 }
@@ -80,6 +87,50 @@ glm::vec3 Scene::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d) {
 glm::vec3 Scene::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d) {
 	return glm::vec3(pos.x + d*std::cos(r*DEG_TO_RADIAN), pos.y, pos.z + d*std::sin(r*DEG_TO_RADIAN));
 }
+
+
+
+//send out pile of game object to the renderer along with the model view stack
+
+void Scene::draw()
+{
+	// clear the screen
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_BACK);
+
+	
+	//Game Objects
+	renderer->draw(gameObjects, mvStack);
+
+
+	//update and draw particles
+	glUseProgram(shaderID[1]);
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
+	//update particle shader
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(),glm::vec3(0,0,0));
+	shader.setProjection(shaderID[1], projection);
+	shader.setMVP(shaderID[1], mvStack.top());
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glDepthMask(0);
+	
+	//draw
+	Sprinkler->draw();
+	Sprinkler->update();
+
+	glDisable(GL_BLEND);
+	glDepthMask(1);
+	glDepthMask(GL_TRUE);
+	
+
+	mvStack.pop();
+}
+
 
 //camer movement
 void Scene::update()
@@ -104,60 +155,31 @@ void Scene::update()
 		glEnable(GL_CULL_FACE);
 	}
 
-
 	at = moveForward(eye, r, 1.0f);
 	mvStack.top() = glm::lookAt(eye, at, up);
+
 }
-
-//send out pile of game object to the renderer along with the model view stack
-
-void Scene::draw()
-{
-	// clear the screen
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glCullFace(GL_BACK);
-
-	
-	//Game Objects
-	renderer->draw(gameObjects, mvStack);
-
-
-	//update and draw particles
-	glUseProgram(shaderID[1]);
-	glBindTexture(GL_TEXTURE_2D, particleTexture);
-	//update particle shader
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(),glm::vec3(0,10,0));
-	shader.setProjection(shaderID[1], projection);
-	shader.setMVP(shaderID[1], mvStack.top());
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	glDepthMask(0);
-	//draw
-	particleTest->draw();
-
-	glDisable(GL_BLEND);
-	glDepthMask(1);
-	glDepthMask(GL_TRUE);
-	//update
-	particleTest->update();
-
-
-	mvStack.pop();
-
-
-
-	
-}
-
 
 
 void Scene::loadGroundAndWalls()
 {
+
+
+	//Test collision detection between AABB and water particles
+	GameObject *collidableBox = new GameObject(glm::vec3(-15, 3, -30), glm::vec3(1, 1, 1), glm::vec3(NULL, NULL, NULL));
+	collidableBox->setTexture("concrete.bmp");
+	collidableBox->setMaterial(material);
+	collidableBox->setMesh("cube.obj");
+	collidableBox->setShader(shaderID[0]);
+	collidableBox->addObjectInstance(glm::vec3(-15, 3, -30));
+	gameObjects.push_back(collidableBox);
+
+	// COLLISIONS
+	// Initialise the bounding box and make this object something the particle effect can test for colliion with
+	collidableBox->initAABB();
+	Sprinkler->addtCollidableObjects(collidableBox);
+
+
 	//Ground Planes
 	GameObject *groundPlane = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
 	groundPlane->setTexture("concrete.bmp");
@@ -172,6 +194,13 @@ void Scene::loadGroundAndWalls()
 	groundPlane->addObjectInstance(glm::vec3(-40, 0, -80));
 
 	gameObjects.push_back(groundPlane);
+
+	// COLLISIONS
+	// Initialise the bounding box and make this object something the particle effect can test for colliion with
+	groundPlane->initAABB();
+	Sprinkler->addtCollidableObjects(groundPlane);
+
+
 
 	//Roof Planes
 	GameObject *roofPlane = new GameObject(glm::vec3(0, 0, 0), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
