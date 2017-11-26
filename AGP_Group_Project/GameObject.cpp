@@ -7,6 +7,24 @@ GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota)
 	position = pos;
 	scaling = scale;
 	rotation = rota;
+
+	
+}
+
+void GameObject::initAABB()
+{
+	// Generate aabb
+	aabb = new AABB(positions, scaling);
+}
+
+glm::vec3 GameObject::getMin()
+{
+	return aabb->min;
+}
+
+glm::vec3 GameObject::getMax()
+{
+	return aabb->max;
 }
 
 void GameObject::addObjectInstance(glm::vec3 pos)
@@ -28,7 +46,7 @@ void GameObject::setMaterial(rt3d::materialStruct mat)
 
 void GameObject::setMesh(char* objectFile)
 {
-	vector<GLfloat> verts;
+	
 	vector<GLfloat> norms;
 	vector<GLfloat> tex_coords;
 	vector<GLuint> indices;

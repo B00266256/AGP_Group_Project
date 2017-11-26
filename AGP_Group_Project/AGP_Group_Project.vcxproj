@@ -121,6 +121,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="collisionTest.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
@@ -132,6 +134,8 @@
     <ClCompile Include="TextureUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
+    <ClInclude Include="collisionTest.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="Renderer.h" />

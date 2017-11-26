@@ -78,7 +78,7 @@ private:
 	glm::vec3 up;
 	glm::mat4 projection;
 
-	ParticleEffect* particleTest;
+	ParticleEffect* Sprinkler;
 	GLuint particleTexture;
 
 };

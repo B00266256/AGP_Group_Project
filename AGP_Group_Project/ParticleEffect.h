@@ -6,11 +6,13 @@
 #include <ctime>
 #include <cstdlib>
 #include "rt3d.h"
+#include "collisionTest.h"
+#include "GameObject.h"
 
 class ParticleEffect
 {
 public:
-	ParticleEffect(int n);
+	ParticleEffect(int n, glm::vec3 pos);
 	~ParticleEffect();
 
 	int getNoP() { return NoP; }
@@ -23,10 +25,15 @@ public:
 	std::vector<float> age;
 	std::vector<bool> isAlive;
 
+	void addtCollidableObjects(GameObject * object) { collidableObjects.push_back(object);  }
+
 	void update(void);
 	void draw(void);
 
 private:
+	CollisionTest *collisionTester;
+	std::vector<GameObject*> collidableObjects;
+
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec4> colours;
 	std::vector<glm::vec3> velocitys;
@@ -36,6 +43,7 @@ private:
 	glm::vec3 bounceValue;					// how much the velocity gets dampened when hitting the ground
 	glm::vec3 acceleration;					// Applied to particles that are alive
 	int lifespan;
+	int bounceLifespan;						// Its life span once it bounced
 
 	int NoP;
 	GLuint vao[1];
