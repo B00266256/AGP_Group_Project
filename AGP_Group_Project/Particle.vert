@@ -4,6 +4,9 @@ in  vec3 in_Position;
 in  vec4 in_Color;
 out vec4 ex_Color;
 
+uniform vec4 spotLightPosition;
+out vec4 Vposition;
+
 uniform mat4 modelview;
 uniform mat4 projection;
 
@@ -22,6 +25,9 @@ void main(void)
 
 
 	gl_Position = projection * vertexPosition;
+
+	//Vposition = vertexPosition;
+	Vposition = vec4( spotLightPosition.xyz - vertexPosition.xyz, 0 );
 
  
 }

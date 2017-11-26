@@ -28,7 +28,6 @@ bool CollisionTest::AABBtoPoint(glm::vec3 min, glm::vec3 max, glm::vec3 point)
 		(point.y > min.y && point.y < max.y) &&
 		(point.z > min.z && point.z < max.z))
 	{
-		std::cout << "Collision" << std::endl;
 		return true;
 	}
 		

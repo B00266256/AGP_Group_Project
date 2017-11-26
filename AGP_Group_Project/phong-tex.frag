@@ -66,6 +66,8 @@ void main(void) {
 	//Compare vector to frag from light to the cones angles
 	float spotEffect = smoothstep(cos(ang2) , cos(ang1) ,cosDir);
 
+	//spotEffect *= max(dot(normalize(ex_N),normalize(L)),0);
+
 	//Add the spotlight light values and times by spoteffect. 
 	//Spoteffect will be zero if the current fragment is no in the spotlights light cone
 	vec4 lightSpot = vec4(spotEffect) * (spotLight.diffuse + spotLight.specular) ;

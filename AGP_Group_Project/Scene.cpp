@@ -22,8 +22,8 @@ Scene::Scene()
 	attQuadratic = 0.01f;
 
 	//define the spotlights cone		
-	angle1 = 20;																						
-	angle2 = 25;
+	angle1 = 15;																						
+	angle2 = 20;
 
 	spotLightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 	spotLightPos = glm::vec4(-15.0f, 5.0f, -20, 1.0f);
@@ -54,6 +54,20 @@ Scene::Scene()
 	shaderID[1] = shader.init("Particle.vert", "Particle.frag");
 	shader.setProjection(shaderID[1], projection);
 	shader.setMVP(shaderID[1], mvStack.top());
+	shader.setSpotlight(shaderID[1], spotLight, glm::value_ptr(spotLightDirection));
+
+	//spotlight angle updates
+	uniformIndex = glGetUniformLocation(shaderID[1], "angle1");
+	glUniform1i(uniformIndex, angle1);
+	uniformIndex = glGetUniformLocation(shaderID[1], "angle2");
+	glUniform1i(uniformIndex, angle2);
+
+	uniformIndex = glGetUniformLocation(shaderID[1], "attConst");
+	glUniform1f(uniformIndex, attConstant);
+	uniformIndex = glGetUniformLocation(shaderID[1], "attLinear");
+	glUniform1f(uniformIndex, attLinear);
+	uniformIndex = glGetUniformLocation(shaderID[1], "attQuadratic");
+	glUniform1f(uniformIndex, attQuadratic);
 
 	//init initialises all game objects and pushes them all into a vector for passing to the renderer.
 	init();
