@@ -26,7 +26,9 @@ public:
 	std::vector<bool> isAlive;
 
 	void addtCollidableObjects(GameObject * object) { collidableObjects.push_back(object);  }
+	void setEmitPos(glm::vec3 pos);
 
+	void init(void);
 	void update(void);
 	void draw(void);
 
@@ -38,6 +40,7 @@ private:
 	std::vector<glm::vec4> colours;
 	std::vector<glm::vec3> velocitys;
 	std::vector<glm::vec3> accel;
+	std::vector<GLuint> texID;
 
 	glm::vec3  emitPosition;				//launch position (sprinkler head)
 	glm::vec3 bounceValue;					// how much the velocity gets dampened when hitting the ground
@@ -53,6 +56,10 @@ private:
 
 	std::clock_t start;
 	double dt;
+
+	GLuint launchTexture;
+	GLuint collideTexture;
+
 };
 
 

@@ -85,7 +85,7 @@ void Scene::init()
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	Sprinkler = new ParticleEffect(1000, glm::vec3(-15, 10, -30));
+	Sprinkler = new ParticleEffect(500, glm::vec3(-15, 20, -30));
 	particleTexture = TextureUtils::loadBitmap("rain.bmp");
 
 	//Creates and pushes all the objects representing the building
@@ -122,7 +122,7 @@ void Scene::draw()
 
 	//update and draw particles
 	glUseProgram(shaderID[1]);
-	glBindTexture(GL_TEXTURE_2D, particleTexture);
+	//glBindTexture(GL_TEXTURE_2D, particleTexture);
 	//update particle shader
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(),glm::vec3(0,0,0));
@@ -150,10 +150,10 @@ void Scene::draw()
 void Scene::update()
 {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, r, 0.1f);
-	if (keys[SDL_SCANCODE_S]) eye = moveForward(eye, r, -0.1f);
-	if (keys[SDL_SCANCODE_A]) eye = moveRight(eye, r, -0.1f);
-	if (keys[SDL_SCANCODE_D]) eye = moveRight(eye, r, 0.1f);
+	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, r, 0.05f);
+	if (keys[SDL_SCANCODE_S]) eye = moveForward(eye, r, -0.05f);
+	if (keys[SDL_SCANCODE_A]) eye = moveRight(eye, r, -0.05f);
+	if (keys[SDL_SCANCODE_D]) eye = moveRight(eye, r, 0.05f);
 	if (keys[SDL_SCANCODE_R]) eye.y += 0.1f;
 	if (keys[SDL_SCANCODE_F]) eye.y -= 0.1f;
 
@@ -172,6 +172,8 @@ void Scene::update()
 	at = moveForward(eye, r, 1.0f);
 	mvStack.top() = glm::lookAt(eye, at, up);
 
+	glm::vec3 sprinklerPos = moveForward(eye, r, 6.0f);
+	Sprinkler->setEmitPos(glm::vec3(sprinklerPos.x, 9.0f, sprinklerPos.z));
 }
 
 

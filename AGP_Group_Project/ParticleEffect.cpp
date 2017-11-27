@@ -14,15 +14,17 @@ int rando(int max, int min) //Pass in range
 ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfParticles)
 {
 	// Init values
- collisionTester = new CollisionTest();
+	collisionTester = new CollisionTest();
 	srand(time(0));
 	emitPosition = pos;
-	bounceValue = glm::vec3(0, 0.1, 0);
+	bounceValue = glm::vec3(0, 0.15, 0);
 	iterator = 0;
 	acceleration = glm::vec3(0, -80, 0);
 	start = 0;
 	lifespan = 750;
 	bounceLifespan = 60;
+
+	init();
 
 	// Initialise all particles
 	for (int i = 0; i < NoP; i++)
@@ -34,6 +36,7 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 		accel.push_back(glm::vec3(0, 0, 0));
 		isAlive.push_back(false);
 		age.push_back(lifespan);
+		texID.push_back(launchTexture);
 
 	}
 
@@ -67,7 +70,7 @@ ParticleEffect::~ParticleEffect()
 
 
 int k;
-
+glm::vec3 launchVelocity;
 
 void ParticleEffect::emitParticle()
 {
@@ -78,7 +81,7 @@ void ParticleEffect::emitParticle()
 		float circleSegment = (360.0f / NoP);
 		float angle = (circleSegment * iterator);
 		float initialSpeed = rand() % 111 / 20;
-		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
+		launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
 
 
 		// Reset particle data
@@ -87,6 +90,7 @@ void ParticleEffect::emitParticle()
 		accel[iterator] = acceleration;
 		isAlive[iterator] = true;
 		age[iterator] = lifespan;
+		texID[iterator] = launchTexture;
 
 		// Set 50% of particle slightly lower alpha values. Very messy, sorry not sorry.
 		if (NULL)
@@ -94,12 +98,12 @@ void ParticleEffect::emitParticle()
 
 		if (k == 1)
 		{
-			colours[iterator] = glm::vec4(0.8, 0.8, 1.0, 0.6);
+			colours[iterator] = glm::vec4(0.8, 0.8, 1.0, 0.7);
 			k = 0;
 		}
 		else
 		{
-			colours[iterator] = glm::vec4(0.5, 0.5, 0.8, 0.5);
+			colours[iterator] = glm::vec4(0.5, 0.5, 0.8, 0.75);
 			k = 1;
 		}
 
@@ -111,7 +115,17 @@ void ParticleEffect::emitParticle()
 		iterator = 0;
 	}
 		
+}
 
+void ParticleEffect::setEmitPos(glm::vec3 pos)
+{
+	this->emitPosition = pos;
+}
+
+void ParticleEffect::init(void)
+{
+	launchTexture = TextureUtils::loadBitmap("raintex.bmp");
+	collideTexture = TextureUtils::loadBitmap("raintex2.bmp");
 }
 
 void ParticleEffect::update()
@@ -125,18 +139,16 @@ void ParticleEffect::update()
 		// Iterate over all particles
 		for (int i = 0; i < NoP; i++)
 		{
-				// If particle has expired has reached end of life mark as dead or decrement lifespan
+			// If particle has expired has reached end of life mark as dead or decrement lifespan
 			if (age[i] <= 0)
 			{
 				isAlive[i] = false;
-				positions[i] = emitPosition;
+				positions[i] = glm::vec3(0.0f, -1000.0f, 0.0f);
 			}
 			else if(age[i] != 0 && isAlive[i])
 			{
 				age[i] -= 1;
 			}
-			
-			
 			
 			// If the particle is alive keep it moving
 			if (isAlive[i])
@@ -152,16 +164,16 @@ void ParticleEffect::update()
 			{
 				if (collisionTester->AABBtoPoint(collidableObjects[j]->getMin(), collidableObjects[j]->getMax(), positions[i]) == true)
 				{
-				
-
 					//glm::vec3 normal = collisions->getCollisionNormal(aabb);
-					glm::vec3 normal(0, 1, 0);
+					glm::vec3 normal = launchVelocity * 0.75f;
+
 					//glm::vec3 bounceDirection = normal * glm::vec3(bounceValue.y);
 
 					//Addjusts height since the particle is probably partially inside the collideable object
 					positions[i].y += 0.2;
 
 					//reflect upwards and dampen velocity
+					//bounceValue = glm::vec3(float(rando(20, 5))/100, 0.1f, float(rando(20, 5))/100);
 					velocitys[i] = -velocitys[i] * (bounceValue);
 
 					//reflect in respect to the surface norm
@@ -171,8 +183,10 @@ void ParticleEffect::update()
 					age[i] = bounceLifespan;
 				
 					//slightly increase alpha
-					colours[i].a += 0.1;
+					colours[i].a = 0.8;
 
+					//switch to secondary texture
+					texID[i] = collideTexture;
 					
 				}
 			}
@@ -210,7 +224,11 @@ void ParticleEffect::draw()
 
 
 	// Now draw the particles... as easy as this!
-	glDrawArrays(GL_POINTS, 0, NoP);
+	for (int i = 0; i < NoP; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, texID[i]);
+		glDrawArrays(GL_POINTS, i, 1);
+	}
 	glBindVertexArray(0);
 
 
