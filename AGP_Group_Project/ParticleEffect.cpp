@@ -13,8 +13,10 @@ int rando(int max, int min) //Pass in range
 
 ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfParticles)
 {
+
+
 	// Init values
- collisionTester = new CollisionTest();
+	 collisionTester = new CollisionTest();
 	srand(time(0));
 	emitPosition = pos;
 	bounceValue = glm::vec3(0, 0.1, 0);
@@ -27,14 +29,12 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 	// Initialise all particles
 	for (int i = 0; i < NoP; i++)
 	{
-	
 		positions.push_back(emitPosition);
 		velocitys.push_back(glm::vec3(0,0,0));
 		colours.push_back(glm::vec4(0, 0, 1, 1));
 		accel.push_back(glm::vec3(0, 0, 0));
 		isAlive.push_back(false);
 		age.push_back(lifespan);
-
 	}
 
 	//init vao/vbo
@@ -118,6 +118,9 @@ void ParticleEffect::update()
 {
 	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	
+
+	//glBindTexture(GL_TEXTURE_2D, particleTexture);
+
 
 	// Initialise next particle
 	emitParticle();
@@ -210,7 +213,10 @@ void ParticleEffect::draw()
 
 
 	// Now draw the particles... as easy as this!
-	glDrawArrays(GL_POINTS, 0, NoP);
+	for (int i = 0; i < NoP; i++)
+	{
+		glDrawArrays(GL_POINTS, i, 1);
+	}
 	glBindVertexArray(0);
 
 

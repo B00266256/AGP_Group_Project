@@ -43,10 +43,7 @@ in vec3 ex_V;
 in vec3 ex_L;
 in vec2 ex_TexCoord;
 in float ex_D;
-in vec3 position;
 layout(location = 0) out vec4 out_Color;
-
-in mat4 mvp;
 
 in vec4 Vposition;
  
@@ -59,17 +56,17 @@ void main(void) {
 	vec4 totalLight;
 
 	//Finds the vector from the spotlight to the vertex
-	vec3 L = Vposition.xyz;		
-	float distToLight = length(L);									
+	vec3 L =  Vposition.xyz;		//spotLightPosition.xyz -
+	float distToLight = length(L);									//this could be used for attenuation
 	L = normalize(L);
 
 	//The angle between spotlight direction and vertex
-	vec3 h = vec3(spotlightDirection + position );
-	float cosDir = dot(L ,-h);
-	//float cosDir = dot(position,-spotlightDirection * mvp);
+	float cosDir = dot(L, -spotlightDirection);
 
 	//Compare vector to frag from light to the cones angles
 	float spotEffect = smoothstep(cos(ang2) , cos(ang1) ,cosDir);
+
+	//spotEffect *= max(dot(normalize(ex_N),normalize(L)),0);
 
 	//Add the spotlight light values and times by spoteffect. 
 	//Spoteffect will be zero if the current fragment is no in the spotlights light cone

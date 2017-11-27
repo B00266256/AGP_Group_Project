@@ -48,9 +48,9 @@ private:
 	//Spot light
 	rt3d::lightStruct spotLight = {
 		{ 0.01f, 0.01f, 0.01f, 1.0f },		// ambient
-		{ 0.2f, 0.2f, 0.3f, 0.2f },			// diffuse
-		{ 0.2f, 0.2f, 0.3f, 0.2f },			// specular
-		{ -5.0f, 3.0f, -11.0f, 1.0f }		// position
+		{ 0.2f, 0.2f, 0.6f, 0.3f },			// diffuse
+		{ 0.2f, 0.2f, 0.6f, 0.3f },			// specular
+		{ -15.0f, 5.0f, -20 , 1.0 }		// position
 	};
 
 	glm::vec4 spotLightPos;

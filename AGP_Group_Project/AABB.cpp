@@ -1,6 +1,7 @@
 #pragma once
 #include "AABB.h"
 
+using namespace std;
 #include <glm/gtc/matrix_transform.hpp>
 #define DEG_TO_RADIAN 0.017453293
 
@@ -31,7 +32,18 @@ AABB::AABB(std::vector<glm::vec3> positions, glm::vec3 scale)
 		this->min = minimum - scale * glm::vec3(positions.size());
 		this->max = maximum +  scale * glm::vec3(positions.size());
 
+		glm::vec3 texMax = this->max;
+		glm::vec3 texMin = glm::vec3(min.x, this->max.y, min.z);
 
+	/*	unsigned char pixel[4];
+		glReadPixels(0.5, 0.5, 1, 1, GL_RGB, GL_BITMAP, pixel);
+		cout << "R: " << (float)pixel[0] << endl;
+		cout << "G: " << (float)pixel[1] << endl;
+		cout << "B: " << (float)pixel[2] << endl;
+		cout << endl;*/
+
+		texMin -= texMin;
+		texMax -= texMin;
 }
 
 
