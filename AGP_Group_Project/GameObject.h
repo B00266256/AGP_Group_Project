@@ -13,6 +13,7 @@ class GameObject
 {
 public:
 	GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota);
+	GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota, float rotdegree);
 	void initAABB();
 
 	void addObjectInstance(glm::vec3 pos);
@@ -29,6 +30,7 @@ public:
 	glm::vec3 getPos(int i);
 	glm::vec3 getScaling();
 	glm::vec3 getRotate();
+	float GameObject::getRotationValue();
 
 	glm::vec3 getMin();
 	glm::vec3 getMax();
@@ -50,6 +52,7 @@ private:
 	glm::vec3 position;
 	glm::vec3 scaling;
 	glm::vec3 rotation;
+	float rotationValue;
 
 	GLuint mesh;
 	GLuint texture;
