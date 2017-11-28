@@ -18,7 +18,7 @@ void main(void)
 	//scale point size so size is consistent at varying distances
 
 	float distance = distance(vec3(vertexPosition), vec3(0,0,0));
-	gl_PointSize = 200/ distance;
+	gl_PointSize = 100/ distance;
 
 
 	gl_Position = projection * vertexPosition;

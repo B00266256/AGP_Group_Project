@@ -16,7 +16,7 @@ public:
 	~ParticleEffect();
 
 	int getNoP() { return NoP; }
-	void emitParticle();
+	void emitParticle(float speedMultiplier, bool velNotPos);
 
 	std::vector<glm::vec3> getPositions(void) const { return positions; }
 	std::vector<glm::vec4> getColours(void) const { return colours; }
@@ -26,8 +26,10 @@ public:
 	std::vector<bool> isAlive;
 
 	void addtCollidableObjects(GameObject * object) { collidableObjects.push_back(object);  }
+	void setEmitPos(glm::vec3 pos);
 
-	void update(void);
+	void init(void);
+	void update(float multiplier, bool isASprinkler);
 	void draw(void);
 
 private:
@@ -38,6 +40,7 @@ private:
 	std::vector<glm::vec4> colours;
 	std::vector<glm::vec3> velocitys;
 	std::vector<glm::vec3> accel;
+	std::vector<GLuint> texID;
 
 	glm::vec3  emitPosition;				//launch position (sprinkler head)
 	glm::vec3 bounceValue;					// how much the velocity gets dampened when hitting the ground
@@ -53,6 +56,10 @@ private:
 
 	std::clock_t start;
 	double dt;
+
+	GLuint launchTexture;
+	GLuint collideTexture;
+
 };
 
 

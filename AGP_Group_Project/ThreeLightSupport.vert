@@ -53,6 +53,6 @@ void main(void) {
 	Vposition = vertexPosition;
 	
 
-    gl_Position = projection * vertexPosition;
+    gl_Position =  * vertexPosition;
 
 }
