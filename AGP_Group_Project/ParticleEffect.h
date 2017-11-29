@@ -16,7 +16,7 @@ public:
 	~ParticleEffect();
 
 	int getNoP() { return NoP; }
-	void emitParticle(float speedMultiplier, bool velNotPos);
+	void emitParticle(float speedMultiplier, float dt, bool velNotPos);
 
 	std::vector<glm::vec3> getPositions(void) const { return positions; }
 	std::vector<glm::vec4> getColours(void) const { return colours; }
@@ -57,8 +57,8 @@ private:
 	std::clock_t start;
 	double dt;
 
-	GLuint launchTexture;
-	GLuint collideTexture;
+	GLuint particleTextures[3];
+	//GLuint collideTexture;
 
 };
 
