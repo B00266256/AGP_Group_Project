@@ -48,13 +48,8 @@ private:
 	//Spot light
 	rt3d::lightStruct spotLight = {
 		{ 0.01f, 0.01f, 0.01f, 1.0f },		// ambient
-<<<<<<< HEAD
 		{ 0.2f, 0.2f, 0.6f, 0.3f },			// diffuse
 		{ 0.2f, 0.2f, 0.6f, 0.3f },			// specular
-=======
-		{ 0.2f, 0.2f, 0.3f, 0.2f },			// diffuse
-		{ 0.2f, 0.2f, 0.3f, 0.2f },			// specular
->>>>>>> origin/Particle-System
 		{ -15.0f, 5.0f, -20 , 1.0 }		// position
 	};
 

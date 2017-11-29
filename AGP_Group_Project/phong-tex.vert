@@ -53,11 +53,11 @@ void main(void) {
 	ex_D = distance(vertexPosition,lightPosition);
 
 	//Vposition = -vertexPosition;
-<<<<<<< HEAD
-	Vposition = normalize( spotLightPosition - vertexPosition.xyz );
-=======
+
+
+
 	Vposition = normalize( spotLightPosition - vertexPosition );
->>>>>>> origin/Particle-System
+
 
 	position = vec3( spotLightPosition);
 

@@ -120,9 +120,15 @@ void Scene::draw()
 	renderer->draw(gameObjects, mvStack);
 
 
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10, 3, -10));
+	shader.setMVP(shaderID[0], mvStack.top());
+	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+	mvStack.pop();
+
 	//update and draw particles
 	glUseProgram(shaderID[1]);
-	//glBindTexture(GL_TEXTURE_2D, particleTexture);
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
 	//update particle shader
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(),glm::vec3(0,0,0));

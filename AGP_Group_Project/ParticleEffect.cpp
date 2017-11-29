@@ -16,11 +16,9 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 
 
 	// Init values
-<<<<<<< HEAD
+
 	 collisionTester = new CollisionTest();
-=======
-	collisionTester = new CollisionTest();
->>>>>>> origin/Particle-System
+
 	srand(time(0));
 	emitPosition = pos;
 	bounceValue = glm::vec3(0, 0.15, 0);
@@ -41,11 +39,9 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 		accel.push_back(glm::vec3(0, 0, 0));
 		isAlive.push_back(false);
 		age.push_back(lifespan);
-<<<<<<< HEAD
-=======
 		texID.push_back(launchTexture);
 
->>>>>>> origin/Particle-System
+
 	}
 
 	//init vao/vbo
@@ -237,10 +233,9 @@ void ParticleEffect::draw()
 	// Now draw the particles... as easy as this!
 	for (int i = 0; i < NoP; i++)
 	{
-<<<<<<< HEAD
-=======
+
 		glBindTexture(GL_TEXTURE_2D, texID[i]);
->>>>>>> origin/Particle-System
+
 		glDrawArrays(GL_POINTS, i, 1);
 	}
 	glBindVertexArray(0);
