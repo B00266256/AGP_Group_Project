@@ -76,21 +76,33 @@ ParticleEffect::~ParticleEffect()
 int k;
 glm::vec3 launchVelocity;
 
-void ParticleEffect::emitParticle()
+void ParticleEffect::emitParticle(float speedMultiplier, bool velNotPos)
 {
 	// Iterate over and re-emit particles
 	if (iterator != NoP)
 	{
-		// Calculate
-		float circleSegment = (360.0f / NoP);
-		float angle = (circleSegment * iterator);
-		float initialSpeed = rand() % 111 / 20;
-		launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
-
-
-		// Reset particle data
-		positions[iterator] = emitPosition;
-		velocitys[iterator] = glm::vec3(launchVelocity);
+		if (velNotPos) {
+			// Calculate
+			float circleSegment = (360.0f / NoP);
+			float angle = (circleSegment * iterator);
+			float initialSpeed = (rand() % 111 / 20) * speedMultiplier;
+			launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 1.0f, 0.0f + (initialSpeed * std::sin(angle)));
+			// Reset particle data
+			positions[iterator] = emitPosition;
+			velocitys[iterator] = glm::vec3(launchVelocity);
+		}
+		else
+		{
+			// Calculate...
+			int multiplier = 1;
+			if (iterator % 2 == 0){ multiplier = -1; }	
+			float xOffset = rand() % 111 / 10 * multiplier;
+			float zOffset = rand() % 111 / 10 * multiplier;
+			glm::vec3 launchPos = glm::vec3(emitPosition.x + xOffset, emitPosition.y, emitPosition.z + zOffset);
+			// Reset particle data
+			positions[iterator] = launchPos;
+			velocitys[iterator] = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
 		accel[iterator] = acceleration;
 		isAlive[iterator] = true;
 		age[iterator] = lifespan;
@@ -121,6 +133,7 @@ void ParticleEffect::emitParticle()
 		
 }
 
+
 void ParticleEffect::setEmitPos(glm::vec3 pos)
 {
 	this->emitPosition = pos;
@@ -132,7 +145,7 @@ void ParticleEffect::init(void)
 	collideTexture = TextureUtils::loadBitmap("raintex2.bmp");
 }
 
-void ParticleEffect::update()
+void ParticleEffect::update(float multiplier, bool isASprinkler)
 {
 	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	
@@ -141,7 +154,7 @@ void ParticleEffect::update()
 
 
 	// Initialise next particle
-	emitParticle();
+	emitParticle(multiplier, isASprinkler);
 		
 		// Iterate over all particles
 		for (int i = 0; i < NoP; i++)
@@ -161,7 +174,6 @@ void ParticleEffect::update()
 			if (isAlive[i])
 			{		
 				positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel[i];
-
 				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel[i]);	
 			}
 			
@@ -187,10 +199,10 @@ void ParticleEffect::update()
 					velocitys[i] += normal;
 
 					//Sets the lifespan so it will die shortly after bounce
-					age[i] = bounceLifespan;
+					age[i] -= bounceLifespan;
 				
 					//slightly increase alpha
-					colours[i].a = 0.8;
+					colours[i].a = 0.65f;
 
 					//switch to secondary texture
 					texID[i] = collideTexture;

@@ -29,7 +29,7 @@ public:
 
 
 
-	void loadGroundAndWalls();
+	void loadScene();
 
 private:
 

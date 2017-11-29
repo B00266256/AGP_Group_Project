@@ -16,7 +16,7 @@ public:
 	~ParticleEffect();
 
 	int getNoP() { return NoP; }
-	void emitParticle();
+	void emitParticle(float speedMultiplier, bool velNotPos);
 
 	std::vector<glm::vec3> getPositions(void) const { return positions; }
 	std::vector<glm::vec4> getColours(void) const { return colours; }
@@ -29,7 +29,7 @@ public:
 	void setEmitPos(glm::vec3 pos);
 
 	void init(void);
-	void update(void);
+	void update(float multiplier, bool isASprinkler);
 	void draw(void);
 
 private:
