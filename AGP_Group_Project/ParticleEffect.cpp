@@ -14,15 +14,17 @@ int rando(int max, int min) //Pass in range
 ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfParticles)
 {
 	// Init values
- collisionTester = new CollisionTest();
+	collisionTester = new CollisionTest();
 	srand(time(0));
 	emitPosition = pos;
-	bounceValue = glm::vec3(0, 0.1, 0);
+	bounceValue = glm::vec3(0, 0.15, 0);
 	iterator = 0;
 	acceleration = glm::vec3(0, -80, 0);
 	start = 0;
 	lifespan = 750;
-	bounceLifespan = 90;
+	bounceLifespan = 60;
+
+	init();
 
 	// Initialise all particles
 	for (int i = 0; i < NoP; i++)
@@ -34,6 +36,7 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 		accel.push_back(glm::vec3(0, 0, 0));
 		isAlive.push_back(false);
 		age.push_back(lifespan);
+		texID.push_back(launchTexture);
 
 	}
 
@@ -67,26 +70,39 @@ ParticleEffect::~ParticleEffect()
 
 
 int k;
+glm::vec3 launchVelocity;
 
-
-void ParticleEffect::emitParticle()
+void ParticleEffect::emitParticle(float speedMultiplier, bool velNotPos)
 {
 	// Iterate over and re-emit particles
 	if (iterator != NoP)
 	{
-		// Calculate
-		float circleSegment = (360.0f / NoP);
-		float angle = (circleSegment * iterator);
-		float initialSpeed = rand() % 111 / 20;
-		glm::vec3 launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 0.0f, 0.0f + (initialSpeed * std::sin(angle)));
-
-
-		// Reset particle data
-		positions[iterator] = emitPosition;
-		velocitys[iterator] = glm::vec3(launchVelocity);
+		if (velNotPos) {
+			// Calculate
+			float circleSegment = (360.0f / NoP);
+			float angle = (circleSegment * iterator);
+			float initialSpeed = (rand() % 111 / 20) * speedMultiplier;
+			launchVelocity = glm::vec3(0.0f + (initialSpeed * std::cos(angle)), 1.0f, 0.0f + (initialSpeed * std::sin(angle)));
+			// Reset particle data
+			positions[iterator] = emitPosition;
+			velocitys[iterator] = glm::vec3(launchVelocity);
+		}
+		else
+		{
+			// Calculate...
+			int multiplier = 1;
+			if (iterator % 2 == 0){ multiplier = -1; }	
+			float xOffset = rand() % 111 / 10 * multiplier;
+			float zOffset = rand() % 111 / 10 * multiplier;
+			glm::vec3 launchPos = glm::vec3(emitPosition.x + xOffset, emitPosition.y, emitPosition.z + zOffset);
+			// Reset particle data
+			positions[iterator] = launchPos;
+			velocitys[iterator] = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
 		accel[iterator] = acceleration;
 		isAlive[iterator] = true;
 		age[iterator] = lifespan;
+		texID[iterator] = launchTexture;
 
 		// Set 50% of particle slightly lower alpha values. Very messy, sorry not sorry.
 		if (NULL)
@@ -94,12 +110,12 @@ void ParticleEffect::emitParticle()
 
 		if (k == 1)
 		{
-			colours[iterator] = glm::vec4(0.8, 0.8, 1.0, 0.6);
+			colours[iterator] = glm::vec4(0.8, 0.8, 1.0, 0.7);
 			k = 0;
 		}
 		else
 		{
-			colours[iterator] = glm::vec4(0.5, 0.5, 0.8, 0.5);
+			colours[iterator] = glm::vec4(0.5, 0.5, 0.8, 0.75);
 			k = 1;
 		}
 
@@ -111,62 +127,57 @@ void ParticleEffect::emitParticle()
 		iterator = 0;
 	}
 		
-
 }
 
-void ParticleEffect::update()
+
+void ParticleEffect::setEmitPos(glm::vec3 pos)
+{
+	this->emitPosition = pos;
+}
+
+void ParticleEffect::init(void)
+{
+	launchTexture = TextureUtils::loadBitmap("raintex.bmp");
+	collideTexture = TextureUtils::loadBitmap("raintex2.bmp");
+}
+
+void ParticleEffect::update(float multiplier, bool isASprinkler)
 {
 	double dt = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	
 
 	// Initialise next particle
-	emitParticle();
+	emitParticle(multiplier, isASprinkler);
 		
-	glm::vec3 min(-16, -8, -31);
-	glm::vec3 max(-14, -6, -29);
-
 		// Iterate over all particles
 		for (int i = 0; i < NoP; i++)
 		{
-				// If particle has expired has reached end of life mark as dead or decrement lifespan
+			// If particle has expired has reached end of life mark as dead or decrement lifespan
 			if (age[i] <= 0)
 			{
 				isAlive[i] = false;
-				positions[i] = emitPosition;
+				positions[i] = glm::vec3(0.0f, -1000.0f, 0.0f);
 			}
 			else if(age[i] != 0 && isAlive[i])
 			{
 				age[i] -= 1;
 			}
 			
-			
-			
-			// If the particle has not hit the ground yet and alive
-			if (positions[i].y >= -9.5 && isAlive[i])
+			// If the particle is alive keep it moving
+			if (isAlive[i])
 			{		
 				positions[i] = positions[i] + (glm::vec3(dt)*velocitys[i]) + glm::vec3(0.5f*(dt*dt))*accel[i];
-
 				velocitys[i] = velocitys[i] + (glm::vec3(0.5f*dt)*accel[i]);	
 			}
-			else //Particle has hit the ground - bounce partiicle
-			{	
-				positions[i].y = -9.4;
-				velocitys[i] = -velocitys[i] * (bounceValue);
-				age[i] = bounceLifespan;
-			}
+			
 
 			//for all possible collidables check for collision
 			for (int j = 0; j < collidableObjects.size(); j++)
 			{
 				if (collisionTester->AABBtoPoint(collidableObjects[j]->getMin(), collidableObjects[j]->getMax(), positions[i]) == true)
 				{
-					/*std::vector<glm::vec3> aabb;
-					aabb.push_back(min);
-					aabb.push_back(min + glm::vec3(0, 0, 2));
-					aabb.push_back(min + glm::vec3(2, 0, 0));*/
-
 					//glm::vec3 normal = collisions->getCollisionNormal(aabb);
-					glm::vec3 normal(0, 1, 0);
+					glm::vec3 normal = launchVelocity * 0.75f;
 
 					//glm::vec3 bounceDirection = normal * glm::vec3(bounceValue.y);
 
@@ -174,16 +185,21 @@ void ParticleEffect::update()
 					positions[i].y += 0.2;
 
 					//reflect upwards and dampen velocity
+					//bounceValue = glm::vec3(float(rando(20, 5))/100, 0.1f, float(rando(20, 5))/100);
 					velocitys[i] = -velocitys[i] * (bounceValue);
 
 					//reflect in respect to the surface norm
 					velocitys[i] += normal;
 
 					//Sets the lifespan so it will die shortly after bounce
-					age[i] = bounceLifespan;
+					age[i] -= bounceLifespan;
 				
 					//slightly increase alpha
-					colours[i].a += 0.1;
+					colours[i].a = 0.65f;
+
+					//switch to secondary texture
+					texID[i] = collideTexture;
+					
 				}
 			}
 
@@ -220,7 +236,11 @@ void ParticleEffect::draw()
 
 
 	// Now draw the particles... as easy as this!
-	glDrawArrays(GL_POINTS, 0, NoP);
+	for (int i = 0; i < NoP; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, texID[i]);
+		glDrawArrays(GL_POINTS, i, 1);
+	}
 	glBindVertexArray(0);
 
 

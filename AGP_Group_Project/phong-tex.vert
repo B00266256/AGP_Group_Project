@@ -15,11 +15,13 @@ out vec3 ex_N;
 out vec3 ex_V;
 out vec3 ex_L;
 out float ex_D;
+out mat4 mvp;
 
 in vec2 in_TexCoord;
 out vec2 ex_TexCoord;
 
 out vec4 Vposition;
+out vec3 position;
 
 
 // multiply each vertex position by the MVP matrix
@@ -50,7 +52,11 @@ void main(void) {
 
 	ex_D = distance(vertexPosition,lightPosition);
 
-	//Vposition = vertexPosition;
-	Vposition = vec4( spotLightPosition.xyz - vertexPosition.xyz, 0 );
+	//Vposition = -vertexPosition;
+	Vposition = normalize( spotLightPosition - vertexPosition );
+
+	position = vec3( spotLightPosition);
+
+	mvp = modelview;
 
 }

@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include "rt3d.h"
 
 class AABB
 {

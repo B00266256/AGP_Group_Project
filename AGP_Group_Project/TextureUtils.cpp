@@ -75,6 +75,12 @@ namespace TextureUtils
 
 		SDL_PixelFormat *format = tmpSurface->format;
 
+		////
+		//// Widthand height in number of pixels 
+		int width = tmpSurface->w;
+		int height = tmpSurface->h;
+		////
+		////
 		GLuint externalFormat, internalFormat;
 		if (format->Amask) {
 			internalFormat = GL_RGBA;

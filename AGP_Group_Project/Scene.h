@@ -29,7 +29,7 @@ public:
 
 
 
-	void loadGroundAndWalls();
+	void loadScene();
 
 private:
 
@@ -39,18 +39,18 @@ private:
 	float attQuadratic;
 
 	rt3d::lightStruct light = {
-		{ 1.0f, 1.0f, 1.0f, 1.0f }, // ambient
-		{ 1.0f, 1.0f, 1.0f, 1.0f }, // diffuse
-		{ 1.0f, 1.0f, 1.0f, 1.0f }, // specular
-		{ -15.0f, 5.0f, -30, 1.0f }  // position
+		{ 1.0f, 1.0f, 1.0f, 1.0f },		// ambient
+		{ 1.0f, 1.0f, 1.0f, 1.0f },		// diffuse
+		{ 1.0f, 1.0f, 1.0f, 1.0f },		// specular
+		{ -15.0f, 5.0f, -30, 1.0f }		 // position
 	};
 
 	//Spot light
 	rt3d::lightStruct spotLight = {
-		{ 0.01f, 0.01f, 0.01f, 1.0f },			// ambient
-		{ 1.0f, 0.8f, 0.8f, 0.8f },				// diffuse
-		{ 0.8f, 0.8f, 0.8f, 0.8f },				// specular
-		{ -5.0f, 3.0f, -11.0f, 1.0f }			// position
+		{ 0.01f, 0.01f, 0.01f, 1.0f },		// ambient
+		{ 0.2f, 0.2f, 0.3f, 0.2f },			// diffuse
+		{ 0.2f, 0.2f, 0.3f, 0.2f },			// specular
+		{ -15.0f, 5.0f, -20 , 1.0 }		// position
 	};
 
 	glm::vec4 spotLightPos;

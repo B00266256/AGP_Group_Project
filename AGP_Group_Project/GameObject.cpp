@@ -1,14 +1,20 @@
 #include "GameObject.h"
 
 
-
 GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota)
 {
 	position = pos;
 	scaling = scale;
 	rotation = rota;
+	rotationValue = 0.0f;
+}
 
-	
+GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota, float rotaVal)
+{
+	position = pos;
+	scaling = scale;
+	rotation = rota;
+	rotationValue = rotaVal;
 }
 
 void GameObject::initAABB()
@@ -78,6 +84,7 @@ glm::vec3 GameObject::getPos(int i)
 
 glm::vec3 GameObject::getScaling() { return scaling; }
 glm::vec3 GameObject::getRotate() { return rotation; }
+float GameObject::getRotationValue() { return rotationValue; }
 
 int GameObject::getMeshIndexCount() { return meshIndexCount; }
 int GameObject::getInstanceCount() { return numberOfInstances; }
