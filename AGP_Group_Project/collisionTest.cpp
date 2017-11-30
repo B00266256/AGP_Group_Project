@@ -12,6 +12,18 @@ bool CollisionTest::AABBtoPoint(glm::vec3 min, glm::vec3 max, glm::vec3 point)
 	
 }
 
+bool CollisionTest::checkCollectableCollision(glm::vec3 userPos, glm::vec3 collectablePos)
+{
+	if (distanceTo(userPos, collectablePos) <= 3.0f)
+		return true;
+	return false;
+}
+
+float CollisionTest::distanceTo(glm::vec3 pos1, glm::vec3 pos2)
+{
+	return sqrt(((pos2.x - pos1.x) * (pos2.x - pos1.x)) + ((pos2.y - pos1.y) * (pos2.y - pos1.y)) + ((pos2.z - pos1.z) * (pos2.z - pos1.z)));
+}
+
 //This was to extend the collsiion reaction to using surface normals. Not completed/used
 glm::vec3 CollisionTest::getCollisionNormal( std::vector<glm::vec3> face)
 {
