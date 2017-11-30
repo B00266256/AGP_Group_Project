@@ -1,7 +1,6 @@
 #version 330
 
-precision highp float; // needed only for version 1.30
-
+precision highp float; 
 
 struct lightStruct
 {
@@ -13,9 +12,9 @@ struct lightStruct
 uniform lightStruct spotLight;
 uniform	vec4 spotLightPosition;				// Position in eye coords.
 uniform vec3 spotlightDirection;			// Normalized direction of the spotlight
-uniform int angle1;
-uniform	int angle2;
-in vec4 Vposition;
+uniform int angle1;							// Angle of outer cone
+uniform	int angle2;							// Angle of inner cone
+in vec4 Vposition;							// Vertex position
 
 
 uniform float attConst;
@@ -29,8 +28,6 @@ uniform sampler2D textureUnit0;
 
 void main(void)
 {
-
-
 	float ang1=  radians(angle1);
 	float ang2 = radians(angle2);
 
@@ -53,14 +50,12 @@ void main(void)
 	vec4 lightSpot = vec4(spotEffect) * (spotLight.diffuse + spotLight.specular);
 
 	totalLight = vec4(lightSpot);
-	//totalLight = totalLight * 1.0f/(attConst + attLinear * distToLight + attQuadratic * distToLight*distToLight);
-
 	
 
-  
-  if(texture(textureUnit0, gl_PointCoord).a < 0.5) discard;
+	//Ditch low values of transparency
+	if(texture(textureUnit0, gl_PointCoord).a < 0.5) discard;
 
-	out_Color = (ex_Color + totalLight) * vec4(ex_Color.a) ;// * texture(textureUnit0, gl_PointCoord);
-	//out_Color = texture(textureUnit0, gl_PointCoord);
+	out_Color = (ex_Color + totalLight) * vec4(ex_Color.a) ;
+	
 	 
 }

@@ -1,12 +1,6 @@
 #include "Shader.h"
 
 
-
-Shader::Shader()
-{
-
-}
-
 GLuint Shader::init(char* vert, char* frag)
 {
 	return rt3d::initShaders(vert, frag);
