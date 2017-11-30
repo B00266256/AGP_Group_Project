@@ -75,16 +75,18 @@ Scene::Scene()
 void Scene::init()
 {
 	
-
 	//particle effect
 	glEnable(GL_POINT_SPRITE);
 
-	//Allows point size to be determined wihtin the vertex shader
+	//Allows point size to be determined wihtin the vertex shader. This took a bit of research to do.
+	//In the original labs particles got bigger as you moved away giving a really unrealistic effect. With this, the shader
+	//can determine the size based on the distance between the camera and the particle keeping the size constant.
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
+	//Particle Effect (Sprinkler/Rain)
 	Sprinkler = new ParticleEffect(100, glm::vec3(-15, 20, -30));
 
-	//Creates and pushes all the objects representing the building
+	//Creates and pushes all the objects representing the building.
 	loadScene();
 }
 
@@ -98,8 +100,7 @@ glm::vec3 Scene::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d) {
 
 
 
-//send out pile of game object to the renderer along with the model view stack
-
+//send out pile of game object to the renderer along with the model view stack which has update to date camera data
 void Scene::draw()
 {
 	// clear the screen
@@ -109,44 +110,37 @@ void Scene::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glCullFace(GL_BACK);
 
-	
-	//Game Objects
+	//draw Game Objects (scene)
 	renderer->draw(gameObjects, mvStack);
 
-
-
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10, 3, -10));
-	shader.setMVP(shaderID[0], mvStack.top());
-	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
-	mvStack.pop();
-
+	//PARTICLES
 
 	//update and draw particles
 	glUseProgram(shaderID[1]);
 	glBindTexture(GL_TEXTURE_2D, particleTexture);
-	//update particle shader
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(0, 0, 0));
+
+	//Update particle shader
 	shader.setProjection(shaderID[1], projection);
 	shader.setMVP(shaderID[1], mvStack.top());
 
+
+	//draw particles
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glDepthMask(0);
 
 	Sprinkler->update(particleLaunchMultiplier, isASprinkler);
-	//draw
+	
 	if (sprinklerActive) Sprinkler->draw();
 
 	glDisable(GL_BLEND);
 	glDepthMask(1);
 	glDepthMask(GL_TRUE);
 
-	mvStack.pop();
+	
 }
 
-//Update function...
+//Update function for input and updating based on new inputs
 void Scene::update()
 {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -217,7 +211,7 @@ void Scene::update()
 
 
 		//spotlight controls
-	
+		//IJKL - changle angle of outer and inner cones of spotlight
 			if (keys[SDL_SCANCODE_I])
 			{
 				if (angle2 < 50)												//These if's cap the angles used for the spotlight. 
@@ -239,6 +233,7 @@ void Scene::update()
 				if (angle1 < 20)
 					angle1 += 1;  
 			}
+			//Toggle Spotlight on and off
 			if (keys[SDL_SCANCODE_O]) //use spotlight
 			{
 				
@@ -249,7 +244,7 @@ void Scene::update()
 				spotLightDirection = glm::vec3(0, 0, -1);
 			}
 		
-			//update spotlight shader
+			//update spotlight in shaders
 			glUseProgram(shaderID[0]);
 			shader.setSpotlightAngles(shaderID[0], angle1, angle2);
 			shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
@@ -263,8 +258,6 @@ void Scene::update()
 
 void Scene::loadScene()
 {
-
-
 	//Collidable crates...
 	//No.1
 	GameObject *collidableBox = new GameObject(glm::vec3(5.0f, 0.0f, -5.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
@@ -316,24 +309,6 @@ void Scene::loadScene()
 	gameObjects.push_back(collidableBox5);
 
 
-	// COLLISIONS
-	// Initialise the bounding box and make this object something the particle effect can test for colliion with
-	collidableBox->initAABB();
-	collidableBox2->initAABB();
-	collidableBox3->initAABB();
-	collidableBox4->initAABB();
-	collidableBox5->initAABB();
-	collidableBox6->initAABB();
-	Sprinkler->addtCollidableObjects(collidableBox);
-	Sprinkler->addtCollidableObjects(collidableBox2);
-	Sprinkler->addtCollidableObjects(collidableBox3);
-	Sprinkler->addtCollidableObjects(collidableBox4);
-	Sprinkler->addtCollidableObjects(collidableBox5);
-	Sprinkler->addtCollidableObjects(collidableBox6);
-
-
-
-
 	//Ground Planes
 	GameObject *groundPlane = new GameObject(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
 	groundPlane->setTexture("concrete.bmp");
@@ -342,12 +317,6 @@ void Scene::loadScene()
 	groundPlane->setShader(shaderID[0]);
 	groundPlane->addObjectInstance(glm::vec3(0.0f, -2.0f, 0.0f));
 	gameObjects.push_back(groundPlane);
-
-	// COLLISIONS
-	// Initialise the bounding box and make this object something the particle effect can test for colliion with
-	groundPlane->initAABB();
-	Sprinkler->addtCollidableObjects(groundPlane);
-
 
 
 	//Roof Planes
@@ -370,7 +339,6 @@ void Scene::loadScene()
 	wall->addObjectInstance(glm::vec3(-20.1f, 5.5f, 10.0f));
 	wall->addObjectInstance(glm::vec3(-20.1f, 5.5f, -10.0f));
 	gameObjects.push_back(wall);
-
 	//Right Wall Planes
 	GameObject *wall2 = new GameObject(glm::vec3(20.1f, 5.5f, 0.0f), glm::vec3(0.1f, 7.5f, 10.0f), glm::vec3(NULL, 1.0f, NULL), 180.0f);
 	wall2->setTexture("brickwall.bmp");
@@ -380,7 +348,6 @@ void Scene::loadScene()
 	wall2->addObjectInstance(glm::vec3(20.1f, 5.5f, 10.0f));
 	wall2->addObjectInstance(glm::vec3(20.1f, 5.5f, -10.0f));
 	gameObjects.push_back(wall2);
-
 	//Front Wall Planes
 	GameObject *wall3 = new GameObject(glm::vec3(0.0f, 5.5f, -20.1f), glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
 	wall3->setTexture("brickwall.bmp");
@@ -390,7 +357,6 @@ void Scene::loadScene()
 	wall3->addObjectInstance(glm::vec3(10.0f, 5.5f, -20.1f));
 	wall3->addObjectInstance(glm::vec3(-10.0f, 5.5f, -20.1f));
 	gameObjects.push_back(wall3);
-
 	//Rear Wall Planes
 	GameObject *wall4 = new GameObject(glm::vec3(0.0f, 5.5f, 20.1f), glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
 	wall4->setTexture("brickwall.bmp");
@@ -400,5 +366,25 @@ void Scene::loadScene()
 	wall4->addObjectInstance(glm::vec3(10.0f, 5.5f, 20.1f));
 	wall4->addObjectInstance(glm::vec3(-10.0f, 5.5f, 20.1f));
 	gameObjects.push_back(wall4);
+
+
+
+	// COLLISIONS
+	// Initialise the bounding boxs and make this object something the particle effect can test for colliion with
+	collidableBox->initAABB();
+	collidableBox2->initAABB();
+	collidableBox3->initAABB();
+	collidableBox4->initAABB();
+	collidableBox5->initAABB();
+	collidableBox6->initAABB();
+	groundPlane->initAABB();
+
+	Sprinkler->addtCollidableObjects(collidableBox);
+	Sprinkler->addtCollidableObjects(collidableBox2);
+	Sprinkler->addtCollidableObjects(collidableBox3);
+	Sprinkler->addtCollidableObjects(collidableBox4);
+	Sprinkler->addtCollidableObjects(collidableBox5);
+	Sprinkler->addtCollidableObjects(collidableBox6);
+	Sprinkler->addtCollidableObjects(groundPlane);
 
 }

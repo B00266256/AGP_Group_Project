@@ -16,13 +16,10 @@ void main(void)
 
 	vec4 vertexPosition = modelview * vec4(in_Position,1.0);
 
-
-	//Calculate diatcne from point to camera and
+	//Calculate distance from point to camera and
 	//scale point size so size is consistent at varying distances
-
 	float distance = distance(vec3(vertexPosition), vec3(0,0,0));
 	gl_PointSize = 100/ distance;
-
 
 	gl_Position = projection * vertexPosition;
 
