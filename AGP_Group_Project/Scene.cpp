@@ -109,8 +109,7 @@ void Scene::init()
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	Sprinkler = new ParticleEffect(500, glm::vec3(-15, 20, -30));
-	particleTexture = TextureUtils::loadBitmap("rain.bmp");
+	Sprinkler = new ParticleEffect(100, glm::vec3(-15, 20, -30));
 
 	//Creates and pushes all the objects representing the building
 	loadScene();
