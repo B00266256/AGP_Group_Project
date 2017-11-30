@@ -26,8 +26,8 @@ Scene::Scene()
 	attQuadratic = 0.01f;
 
 	//define the spotlights cone		
-	angle1 = 15;																						
-	angle2 = 20;
+	angle1 = 20;																						
+	angle2 = 25;
 
 	spotLightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 	spotLightPos = glm::vec4(-15.0f, 5.0f, -20, 1.0f);
@@ -39,59 +39,32 @@ Scene::Scene()
 	shader.setProjection(shaderID[0], projection);
 	shader.setMVP(shaderID[0], mvStack.top());
 	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+	shader.setAttenuation(shaderID[0], attConstant, attLinear, attConstant);
+	shader.setSpotlightAngles(shaderID[0], angle1, angle2);
 
-	//spotlight angle updates
-	GLuint uniformIndex = glGetUniformLocation(shaderID[0], "angle1");
-	glUniform1i(uniformIndex, angle1);
-	uniformIndex = glGetUniformLocation(shaderID[0], "angle2");
-	glUniform1i(uniformIndex, angle2);
 
-	uniformIndex = glGetUniformLocation(shaderID[0], "attConst");
-	glUniform1f(uniformIndex, attConstant);
-	uniformIndex = glGetUniformLocation(shaderID[0], "attLinear");
-	glUniform1f(uniformIndex, attLinear);
-	uniformIndex = glGetUniformLocation(shaderID[0], "attQuadratic");
-	glUniform1f(uniformIndex, attQuadratic);
 
 	//Particle Shader
 	shaderID[1] = shader.init("Particle.vert", "Particle.frag");
 	shader.setProjection(shaderID[1], projection);
 	shader.setMVP(shaderID[1], mvStack.top());
 	shader.setSpotlight(shaderID[1], spotLight, glm::value_ptr(spotLightDirection));
+	shader.setAttenuation(shaderID[1], attConstant, attLinear, attConstant);
+	shader.setSpotlightAngles(shaderID[1], angle1, angle2);
 
-	//spotlight angle updates
-	uniformIndex = glGetUniformLocation(shaderID[1], "angle1");
-	glUniform1i(uniformIndex, angle1);
-	uniformIndex = glGetUniformLocation(shaderID[1], "angle2");
-	glUniform1i(uniformIndex, angle2);
-
-	uniformIndex = glGetUniformLocation(shaderID[1], "attConst");
-	glUniform1f(uniformIndex, attConstant);
-	uniformIndex = glGetUniformLocation(shaderID[1], "attLinear");
-	glUniform1f(uniformIndex, attLinear);
-	uniformIndex = glGetUniformLocation(shaderID[1], "attQuadratic");
-	glUniform1f(uniformIndex, attQuadratic);
 
 	//Normal map shader program
-	shaderID[0] = shader.init("normalmap.vert", "normalmap.frag");
-	shader.setLight(shaderID[0], light);
-	shader.setMaterial(shaderID[0], material);
-	shader.setProjection(shaderID[0], projection);
-	shader.setMVP(shaderID[0], mvStack.top());
-	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+	shaderID[2] = shader.init("normalmap.vert", "normalmap.frag");
+	shader.setLight(shaderID[2], light);
+	shader.setMaterial(shaderID[2], material);
+	shader.setProjection(shaderID[2], projection);
+	shader.setMVP(shaderID[2], mvStack.top());
+	shader.setSpotlight(shaderID[2], spotLight, glm::value_ptr(spotLightDirection));
 
-	//spotlight angle updates
-	uniformIndex = glGetUniformLocation(shaderID[0], "angle1");
-	glUniform1i(uniformIndex, angle1);
-	uniformIndex = glGetUniformLocation(shaderID[0], "angle2");
-	glUniform1i(uniformIndex, angle2);
+	shader.setSpotlightAngles(shaderID[2], angle1, angle2);
+	shader.setAttenuation(shaderID[2], attConstant, attLinear, attConstant);
 
-	uniformIndex = glGetUniformLocation(shaderID[0], "attConst");
-	glUniform1f(uniformIndex, attConstant);
-	uniformIndex = glGetUniformLocation(shaderID[0], "attLinear");
-	glUniform1f(uniformIndex, attLinear);
-	uniformIndex = glGetUniformLocation(shaderID[0], "attQuadratic");
-	glUniform1f(uniformIndex, attQuadratic);
+
 
 	//init initialises all game objects and pushes them all into a vector for passing to the renderer.
 	init();
@@ -241,6 +214,50 @@ void Scene::update()
 		if (keys[SDL_SCANCODE_M]) sprinklerPos.y -= 0.1f;
 	}
 		Sprinkler->setEmitPos(glm::vec3(sprinklerPos.x, sprinklerPos.y, sprinklerPos.z));
+
+
+		//spotlight controls
+	
+			if (keys[SDL_SCANCODE_I])
+			{
+				if (angle2 < 50)												//These if's cap the angles used for the spotlight. 
+																				//Not capping causes unwanted effects
+					angle2 += 1;	
+			}
+			if (keys[SDL_SCANCODE_J])
+			{
+				if (angle1 > 0)
+					angle1 -= 1; 
+			}
+			if (keys[SDL_SCANCODE_K])
+			{
+				if (angle2 > 20)
+					angle2 -= 1; 
+			}
+			if (keys[SDL_SCANCODE_L])
+			{
+				if (angle1 < 20)
+					angle1 += 1;  
+			}
+			if (keys[SDL_SCANCODE_O]) //use spotlight
+			{
+				
+				spotLightDirection = glm::vec3(0, 0, 0);
+			}
+			if (keys[SDL_SCANCODE_P]) //use positional light
+			{
+				spotLightDirection = glm::vec3(0, 0, -1);
+			}
+		
+			//update spotlight shader
+			glUseProgram(shaderID[0]);
+			shader.setSpotlightAngles(shaderID[0], angle1, angle2);
+			shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+
+			glUseProgram(shaderID[1]);
+			shader.setSpotlightAngles(shaderID[1], angle1, angle2);
+			shader.setSpotlight(shaderID[1], spotLight, glm::value_ptr(spotLightDirection));
+			
 }
 
 

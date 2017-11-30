@@ -56,9 +56,9 @@ void main(void) {
 
 
 
-	Vposition = normalize( spotLightPosition - vertexPosition );
+//	Vposition = normalize( spotLightPosition - vertexPosition );
 
-
+	Vposition = vertexPosition;
 	position = vec3( spotLightPosition);
 
 	mvp = modelview;

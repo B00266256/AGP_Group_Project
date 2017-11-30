@@ -1,5 +1,8 @@
 #version 330
 
+uniform vec4 spotLightPosition;
+out vec4 Vposition;
+
 in  vec3 in_Position;
 in  vec4 in_Color;
 out vec4 ex_Color;
@@ -23,5 +26,6 @@ void main(void)
 
 	gl_Position = projection * vertexPosition;
 
- 
+	//spotlight
+	Vposition = vertexPosition;
 }

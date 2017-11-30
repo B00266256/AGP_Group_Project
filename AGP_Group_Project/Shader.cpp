@@ -32,6 +32,16 @@ void Shader::setSpotlight(const GLuint program, rt3d::lightStruct spotLight, con
 	rt3d::setSpotlightUniforms(program, spotLight, direction);
 }
 
+void Shader::setSpotlightAngles(const GLuint program, int angle1, int angle2)
+{
+	//spotlight angle updates
+	GLuint uniformIndex = glGetUniformLocation(program, "angle1");
+	glUniform1i(uniformIndex, angle1);
+	uniformIndex = glGetUniformLocation(program, "angle2");
+	glUniform1i(uniformIndex, angle2);
+
+}
+
 void Shader::setMaterial(GLuint shaderID, rt3d::materialStruct material)
 {
 	rt3d::setMaterial(shaderID, material);
