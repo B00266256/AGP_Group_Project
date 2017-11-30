@@ -61,15 +61,15 @@ void main(void) {
 	vec4 totalLight;
 
 	//Finds the vector from the spotlight to the vertex
-	vec3 L = Vposition.xyz;		
+	vec3 L =  spotLightPosition.xyz - Vposition.xyz;
 	float distToLight = length(L);									
 	L = normalize(L);
 
 	//The angle between spotlight direction and vertex
-	vec3 h = vec3(spotlightDirection + position );
-	float cosDir = dot(L ,-h);
+	//vec3 h = vec3(spotlightDirection + position );
+	//float cosDir = dot(L ,-h);
 	//float cosDir = dot(position,-spotlightDirection * mvp);
-
+	float cosDir = dot(L , - spotlightDirection);
 	//Compare vector to frag from light to the cones angles
 	float spotEffect = smoothstep(cos(ang2) , cos(ang1) ,cosDir);
 
@@ -80,7 +80,7 @@ void main(void) {
 	//lightSpot = lightSpot * max(dot(normalize(ex_N),normalize(L)),0);
 
 	totalLight = vec4(lightSpot) * (material.ambient + material.diffuse + material.specular);
-	totalLight = totalLight * 1.0f/(attConst + attLinear * distToLight + attQuadratic * distToLight*distToLight);
+	//totalLight = totalLight * 1.0f/(attConst + attLinear * distToLight + attQuadratic * distToLight*distToLight);
 	
     
 	// Ambient intensity

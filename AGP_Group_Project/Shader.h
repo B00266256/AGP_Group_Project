@@ -19,6 +19,7 @@ public:
 	void setProjection(GLuint shaderID, glm::mat4 projection);
 
 	void setSpotlight(const GLuint program, rt3d::lightStruct spotLight, const GLfloat * direction);
+	void setSpotlightAngles(const GLuint program, int angle1, int angle2);
 	
 
 private:
