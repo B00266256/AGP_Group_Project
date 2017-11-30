@@ -53,7 +53,11 @@ void main(void) {
 	ex_D = distance(vertexPosition,lightPosition);
 
 	//Vposition = -vertexPosition;
+
+
+
 	Vposition = normalize( spotLightPosition - vertexPosition );
+
 
 	position = vec3( spotLightPosition);
 

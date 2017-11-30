@@ -109,8 +109,7 @@ void Scene::init()
 	//Allows point size to be determined wihtin the vertex shader
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
-	Sprinkler = new ParticleEffect(500, glm::vec3(-15, 20, -30));
-	particleTexture = TextureUtils::loadBitmap("rain.bmp");
+	Sprinkler = new ParticleEffect(100, glm::vec3(-15, 20, -30));
 
 	//Creates and pushes all the objects representing the building
 	loadScene();
@@ -141,9 +140,18 @@ void Scene::draw()
 	//Game Objects
 	renderer->draw(gameObjects, mvStack);
 
+
+
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10, 3, -10));
+	shader.setMVP(shaderID[0], mvStack.top());
+	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
+	mvStack.pop();
+
+
 	//update and draw particles
 	glUseProgram(shaderID[1]);
-	//glBindTexture(GL_TEXTURE_2D, particleTexture);
+	glBindTexture(GL_TEXTURE_2D, particleTexture);
 	//update particle shader
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(0, 0, 0));
