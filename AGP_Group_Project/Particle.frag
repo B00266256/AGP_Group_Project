@@ -28,8 +28,10 @@ uniform sampler2D textureUnit0;
 
 void main(void)
 {
-	float ang1=  radians(angle1);
-	float ang2 = radians(angle2);
+	float DEG_TO_RADIANS = 0.017453293;
+
+	float ang1=  angle1 * DEG_TO_RADIANS;
+	float ang2 = angle2 * DEG_TO_RADIANS;
 
 	//Spotlight calculations
 	vec4 totalLight;
