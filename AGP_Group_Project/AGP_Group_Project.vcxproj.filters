@@ -53,15 +53,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="rt3d.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -71,36 +62,39 @@
     <ClInclude Include="TextureUtils.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEffect.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="collisionTest.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="phong-tex.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="phong-tex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Particle.frag">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Particle.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="normalmap.frag">
+    <None Include="Phong-Tex-Spotlight.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="normalmap.vert">
+    <None Include="Phong-Tex-Spotlight.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

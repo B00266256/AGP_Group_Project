@@ -1,5 +1,5 @@
 //ParticleEffect.h
-//AGP Group Project B00266256, B00Chloe
+//AGP Group Project B00266256, B00286864.
 //"Used to define our falling water particle system."
 
 #include <glm/glm.hpp>
@@ -19,18 +19,20 @@ public:
 	~ParticleEffect();						//Destructor.
 
 	//Default methods...
-	void init(void);									//Initialises the particles and particle system.
+	void init();										//Initialises the particles and particle system.
 	void update(float multiplier, bool isASprinkler);	//Updates the particles within our system (applies physics, updates positions and other values.)
-	void draw(void);									//Renders the particles to the scene.
+	void draw();										//Renders the particles to the scene.
 
 
 	void emitParticle(float speedMultiplier, float dt, bool isASprinkler);	//emits a new particle. (Pass in mutiplier for launch velocity, delta-time of the update and if we want a sprinkler effect.
 	void addtCollidableObjects(GameObject * object) { collidableObjects.push_back(object); }	//adds a new collidable object to the list.
 	void setEmitPos(glm::vec3 pos) { emitPosition = pos; }										//set method for emit position.
 	void setParticleColour(glm::vec4 colour) { particleColour = colour; }						//set method for emit colour.
+	void setParticlePointSize(int size) { particlePointSize = size; }							//set method for particle size.
 
 	//Get methods for private variables...
 	int getNoP() { return NoP; }
+	int getPPS() { return particlePointSize; }
 
 	std::vector<glm::vec3> getPositions() const { return positions; }
 	std::vector<glm::vec4> getColours() const { return colours; }
@@ -39,6 +41,7 @@ public:
 	std::vector<GLuint> getTexID() const { return texID; }
 	std::vector<float> getAge() const { return age; }
 	std::vector<bool> getIsAlive() const{ return isAlive; }
+	std::vector<int> getSizes() const { return sizes; }
 
 private:
 	CollisionTest *collisionTester; //collision testing class for use in particle collision.
@@ -52,7 +55,7 @@ private:
 	std::vector<GLuint> texID;				//current texture.
 	std::vector<float> age;					//current lifespan remaining.
 	std::vector<bool> isAlive;				//current status with regards to its use.
-
+	std::vector<int> sizes;					//current particle point size.
 
 
 	glm::vec3 emitPosition;		//launch position for particles when created.
@@ -62,6 +65,7 @@ private:
 	int lifespan;				//the default value for how long our particles last before being removed from the scene.
 	int NoP;					//the number of particles defined in the scene, iterates through them when emitting.
 	int iterator;				//used to iterate through all particles when emitting them.
+	int particlePointSize;		//the size of the particles being drawn.
 
 	//Used in locking our particle effects to a clock rather than the framerate...
 	std::clock_t start;

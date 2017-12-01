@@ -18,6 +18,7 @@ ParticleEffect::ParticleEffect(int numOfParticles, glm::vec3 pos) : NoP(numOfPar
 	accelerationConst = glm::vec3(0, -80, 0);
 	lifespan = 500;
 	particleColour = glm::vec4(0.9f, 0.9f, 0.95f, 0.5f);
+	particlePointSize = 100;
 }
 
 
@@ -45,7 +46,8 @@ void ParticleEffect::init(void)
 		acceleration.push_back(glm::vec3(0, 0, 0));		//acceleration as static.
 		age.push_back(lifespan);					//age as the default particle lifespan.
 		texID.push_back(particleTextures[0]);		//texture as the default particle texture.
-		isAlive.push_back(false); //assume the particle is dead and will need to be emitted in update.
+		isAlive.push_back(false);					//assume the particle is dead and will need to be emitted in update.
+		sizes.push_back(particlePointSize);			//give the particle a default size.
 	}
 	//Initialise the VAO/VBO's...
 	glGenVertexArrays(1, vao);
@@ -100,11 +102,11 @@ void ParticleEffect::update(float multiplier, bool isASprinkler)
 					//Calculate the reflection-vector and detemine a dampening value...
 					glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f); //Setup a default normal value (Assumes top surfaces only, no sides.)
 					glm::vec3 reflectVector = velocitys[i] - (2*(glm::dot(velocitys[i], normal))*normal);
-					float dampeningValue = 0.5f;
+					float dampeningValue = 0.33f;
 					//Sets the collided particle's velocity to the reflect-vector and applies a dampening value, should produce realistic collision reaction...
-					velocitys[i] = glm::vec3(reflectVector.x * dampeningValue, reflectVector.y * dampeningValue, reflectVector.z * dampeningValue);
+					velocitys[i] = glm::vec3(reflectVector.x, reflectVector.y * dampeningValue, reflectVector.z);
 					//Decrements the lifespan significantly to kill off particles after their first collisions...
-					age[i] -= 250 * dt;		
+					age[i] -= 250;		
 				}
 			}
 		} else {
@@ -137,6 +139,13 @@ void ParticleEffect::draw()
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);     // Enable attribute index.
 
+	//Update the sizes...
+	glBindVertexArray(vao[2]); // bind VAO 0 as current object.
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]); // bind VBO 0.
+	glBufferData(GL_ARRAY_BUFFER, NoP * sizeof(int), sizes.data(), GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);     // Enable attribute index.
+
 	//Draw all of our particles...
 	for (int i = 0; i < NoP; i++)
 	{
@@ -147,13 +156,15 @@ void ParticleEffect::draw()
 }
 
 
-
+//Emmision globals...
 float it = 0;
 int k;
 glm::vec3 launchVelocity;
 
 void ParticleEffect::emitParticle(float speedMultiplier, float dt, bool isASprinkler)
 {
+	//"it" and "iterator" are used to iterate through the list of particles, "it" is cast to an integer after being updated by the delta time, ->
+	// -> this should tie our particle emmisions to the clock rather than the framerate...
 	iterator = int(it);
 
 	if (iterator < NoP) 
@@ -198,12 +209,14 @@ void ParticleEffect::emitParticle(float speedMultiplier, float dt, bool isASprin
 		isAlive[iterator] = true;	//set the particle as alive so that it will update.
 		age[iterator] = lifespan;	//reset the particle to the default lifespan.
 		texID[iterator] = particleTextures[0]; //set a default texture.
-		colours[iterator] = particleColour;	//set a initial colour.
+		colours[iterator] = particleColour;	//set an initial colour.
+		sizes[iterator] = particlePointSize; //set an initial size.
 
+		//Update the iteration vaules by a factor of the delta-time...
 		it += 100 * dt;
 	}
 	else
-	{	//we've emitted all particles(NoP), start re-emitting from particle 0
+	{	//All of our particles have been emmited for this iteration, start re-emitting from particle 0...
 		it = 0;
 	}
 

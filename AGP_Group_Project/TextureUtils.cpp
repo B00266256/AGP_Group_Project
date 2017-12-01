@@ -2,8 +2,12 @@
 
 namespace TextureUtils
 {
-	TTF_Font * textFont;
+	
+	//////////////////////////////
+	//Loads a texture using text//
+	//////////////////////////////
 
+	TTF_Font * textFont;
 	GLuint textToTexture(const char * str, GLuint textID/*, TTF_Font *font, SDL_Color colour, GLuint &w,GLuint &h */) {
 		TTF_Font *font = textFont;
 		SDL_Color colour = { 255, 255, 255 };
@@ -54,7 +58,9 @@ namespace TextureUtils
 		return texture;
 	}
 
-
+	////////////////////////////////////
+	//Loads a bitmap file as a texture//
+	////////////////////////////////////
 	GLuint loadBitmap(char *fname) {
 		GLuint texID;
 		glGenTextures(1, &texID); // generate texture ID
@@ -99,7 +105,9 @@ namespace TextureUtils
 		return texID;	// return value of texture ID
 	}
 
-
+	/////////////////////////////////
+	//Loads a PNG file as a texture//
+	/////////////////////////////////
 	GLuint loadPNG(char *fname) {
 		GLuint texID;
 		glGenTextures(1, &texID); // generate texture ID

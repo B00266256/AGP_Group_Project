@@ -51,3 +51,9 @@ void Shader::setAttenuation(GLuint shaderID, float attConstant, float attLinear,
 	glUniform1f(uniformIndex, attQuadratic);
 
 }
+
+void Shader::setParticleSize(const GLuint program, int size)
+{
+	GLuint uniformIndex = glGetUniformLocation(program, "pointSize");
+	glUniform1i(uniformIndex, size);
+}

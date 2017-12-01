@@ -35,8 +35,17 @@ Scene::Scene()
 	spotLightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 	spotLightPos = glm::vec4(-15.0f, 5.0f, -20, 1.0f);
 
-	//Phong tex shader program
-	shaderID[0] = shader.init("phong-tex.vert", "phong-tex.frag");
+	init(); //init initialises all game objects and pushes them all into a vector for passing to the renderer.
+}
+
+Scene::~Scene()
+{
+}
+
+void Scene::init()
+{
+	//Phong tex shader program...
+	shaderID[0] = shader.init("Phong-Tex-Spotlight.vert", "Phong-Tex-Spotlight.frag");
 	shader.setLight(shaderID[0], light);
 	shader.setMaterial(shaderID[0], material);
 	shader.setProjection(shaderID[0], projection);
@@ -44,8 +53,6 @@ Scene::Scene()
 	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
 	shader.setAttenuation(shaderID[0], attConstant, attLinear, attConstant);
 	shader.setSpotlightAngles(shaderID[0], angle1, angle2);
-
-
 
 	//Particle Shader...
 	shaderID[1] = shader.init("Particle.vert", "Particle.frag");
@@ -55,29 +62,8 @@ Scene::Scene()
 	shader.setAttenuation(shaderID[1], attConstant, attLinear, attConstant);
 	shader.setSpotlightAngles(shaderID[1], angle1, angle2);
 
-
-	//Normal map shader program...
-	shaderID[2] = shader.init("normalmap.vert", "normalmap.frag");
-	shader.setLight(shaderID[2], light);
-	shader.setMaterial(shaderID[2], material);
-	shader.setProjection(shaderID[2], projection);
-	shader.setMVP(shaderID[2], mvStack.top());
-	shader.setSpotlight(shaderID[2], spotLight, glm::value_ptr(spotLightDirection));
-
-	shader.setSpotlightAngles(shaderID[2], angle1, angle2);
-	shader.setAttenuation(shaderID[2], attConstant, attLinear, attConstant);
-
-	//init initialises all game objects and pushes them all into a vector for passing to the renderer.
-	init();
-}
-
-
-
-void Scene::init()
-{
 	
-	//particle effect
-	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_POINT_SPRITE); //use for particles.
 
 	//Allows point size to be determined wihtin the vertex shader. This took a bit of research to do.
 	//In the original labs particles got bigger as you moved away giving a really unrealistic effect. With this, the shader
@@ -85,7 +71,7 @@ void Scene::init()
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	//Particle Effect (Sprinkler/Rain)
-	Sprinkler = new ParticleEffect(100, glm::vec3(-15, 20, -30));
+	Sprinkler = new ParticleEffect(100, glm::vec3(0.0f, 10.0f, 10.0f));
 	Sprinkler->init();
 	//Creates and pushes all the objects representing the building.
 	loadScene();
@@ -131,8 +117,6 @@ void Scene::draw()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glDepthMask(0);
-
-	Sprinkler->update(particleLaunchMultiplier, isASprinkler);
 	
 	if (sprinklerActive) Sprinkler->draw();
 
@@ -171,29 +155,35 @@ void Scene::update()
 	}
 
 	//Particle emitter controls...
-	if (keys[SDL_SCANCODE_7]) {
+	if (keys[SDL_SCANCODE_KP_7]) {
 		sprinklerActive = true;
 		std::cout << "Particle emitter on!" << std::endl;
 	}
-	if (keys[SDL_SCANCODE_8]) {
+	if (keys[SDL_SCANCODE_KP_4]) {
 		sprinklerActive = false;
 		std::cout << "Particle emitter off!" << std::endl;
 	}
-	if (keys[SDL_SCANCODE_9]) {
+	if (keys[SDL_SCANCODE_KP_9]) {
 		tetherSprinkler = true;
 		isASprinkler = false;
 		std::cout << "Particle emitter tethered to camera. Rain Effect!" << std::endl;
 	}
-	if (keys[SDL_SCANCODE_0]) {
+	if (keys[SDL_SCANCODE_KP_6]) {
 		tetherSprinkler = false;
 		isASprinkler = true;
 		std::cout << "Particle emitter untethered from camera. Use arrow keys to move!" << std::endl;
 	}
-	if (keys[SDL_SCANCODE_MINUS]) {
+	if (keys[SDL_SCANCODE_KP_MINUS]) {
 		particleLaunchMultiplier -= 0.05f;
 	}
-	if (keys[SDL_SCANCODE_EQUALS]) {
+	if (keys[SDL_SCANCODE_KP_PLUS]) {
 		particleLaunchMultiplier += 0.05f;
+	}
+	if (keys[SDL_SCANCODE_KP_MULTIPLY]) {
+		Sprinkler->setParticlePointSize(Sprinkler->getPPS() + 1);
+	}
+	if (keys[SDL_SCANCODE_KP_DIVIDE]) {
+		Sprinkler->setParticlePointSize(Sprinkler->getPPS() - 1);
 	}
 
 	if (tetherSprinkler)
@@ -211,9 +201,9 @@ void Scene::update()
 	}
 	Sprinkler->setEmitPos(glm::vec3(sprinklerPos.x, sprinklerPos.y, sprinklerPos.z));
 
-	if (keys[SDL_SCANCODE_KP_1]) { Sprinkler->setParticleColour(glm::vec4(1.0f, 0.0f, 0.0f, 0.9f)); }
-	if (keys[SDL_SCANCODE_KP_2]) { Sprinkler->setParticleColour(glm::vec4(0.0f, 1.0f, 0.0f, 0.9f)); }
-	if (keys[SDL_SCANCODE_KP_3]) { Sprinkler->setParticleColour(glm::vec4(0.0f, 0.0f, 1.0f, 0.9f)); }
+	if (keys[SDL_SCANCODE_KP_1]) { Sprinkler->setParticleColour(glm::vec4(1.0f, 0.0f, 0.0f, 0.8f)); }
+	if (keys[SDL_SCANCODE_KP_2]) { Sprinkler->setParticleColour(glm::vec4(0.0f, 1.0f, 0.0f, 0.8f)); }
+	if (keys[SDL_SCANCODE_KP_3]) { Sprinkler->setParticleColour(glm::vec4(0.0f, 0.0f, 1.0f, 0.8f)); }
 	if (keys[SDL_SCANCODE_KP_5]) { Sprinkler->setParticleColour(glm::vec4(0.8f, 0.8f, 0.8f, 0.6f)); }
 
 	//spotlight controls - IJKL - changle angle of outer and inner cones of spotlight
@@ -247,11 +237,14 @@ void Scene::update()
 	glUseProgram(shaderID[0]);
 	shader.setSpotlightAngles(shaderID[0], angle1, angle2);
 	shader.setSpotlight(shaderID[0], spotLight, glm::value_ptr(spotLightDirection));
-		
+	
+	//particle shader
 	glUseProgram(shaderID[1]);
 	shader.setSpotlightAngles(shaderID[1], angle1, angle2);
 	shader.setSpotlight(shaderID[1], spotLight, glm::value_ptr(spotLightDirection));
 		
+	Sprinkler->update(particleLaunchMultiplier, isASprinkler);
+
 	if (col->checkCollectableCollision(eye, collectable->getPos(0)))
 	{
 		std::cout << "Secret Documents Found!!! Press 'E' to quit as a winner!" << std::endl;
@@ -269,7 +262,7 @@ void Scene::loadScene()
 	//Collidable crates...
 	//First crate at origin...
 		//No.1
-		GameObject *collidableBox = new GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox->setTexture("crateTex.bmp");
 		collidableBox->setMaterial(material);
 		collidableBox->setMesh("cube.obj");
@@ -278,7 +271,7 @@ void Scene::loadScene()
 		gameObjects.push_back(collidableBox);
 	//Rear Right Crates - x3 Stacked...
 		//No.2
-		GameObject *collidableBox2 = new GameObject(glm::vec3(18.0f, 0.0f, -14.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox2 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox2->setTexture("crateTex.bmp");
 		collidableBox2->setMaterial(material);
 		collidableBox2->setMesh("cube.obj");
@@ -286,7 +279,7 @@ void Scene::loadScene()
 		collidableBox2->addObjectInstance(glm::vec3(18.0f, 0.0f, -14.0f));
 		gameObjects.push_back(collidableBox2);
 		//No.3
-		GameObject *collidableBox3 = new GameObject(glm::vec3(14.0f, 0.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox3 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox3->setTexture("crateTex.bmp");
 		collidableBox3->setMaterial(material);
 		collidableBox3->setMesh("cube.obj");
@@ -294,7 +287,7 @@ void Scene::loadScene()
 		collidableBox3->addObjectInstance(glm::vec3(14.0f, 0.0f, -18.0f));
 		gameObjects.push_back(collidableBox3);
 		//No.4
-		GameObject *collidableBox4 = new GameObject(glm::vec3(18.0f, 4.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox4 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox4->setTexture("crateTex.bmp");
 		collidableBox4->setMaterial(material);
 		collidableBox4->setMesh("cube.obj");
@@ -303,7 +296,7 @@ void Scene::loadScene()
 		gameObjects.push_back(collidableBox4);
 	//Rear Left Crates - x4 Stacked...
 		//No.5
-		GameObject *collidableBox5 = new GameObject(glm::vec3(-18.0f, 0.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox5 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox5->setTexture("crateTex.bmp");
 		collidableBox5->setMaterial(material);
 		collidableBox5->setMesh("cube.obj");
@@ -311,7 +304,7 @@ void Scene::loadScene()
 		collidableBox5->addObjectInstance(glm::vec3(-18.0f, 0.0f, -18.0f));
 		gameObjects.push_back(collidableBox5);
 		//No.6
-		GameObject *collidableBox6 = new GameObject(glm::vec3(-18.0f, 4.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox6 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox6->setTexture("crateTex.bmp");
 		collidableBox6->setMaterial(material);
 		collidableBox6->setMesh("cube.obj");
@@ -319,7 +312,7 @@ void Scene::loadScene()
 		collidableBox6->addObjectInstance(glm::vec3(-18.0f, 4.0f, -18.0f));
 		gameObjects.push_back(collidableBox6);
 		//No.7
-		GameObject *collidableBox7 = new GameObject(glm::vec3(-14.0f, 0.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox7 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox7->setTexture("crateTex.bmp");
 		collidableBox7->setMaterial(material);
 		collidableBox7->setMesh("cube.obj");
@@ -327,7 +320,7 @@ void Scene::loadScene()
 		collidableBox7->addObjectInstance(glm::vec3(-14.0f, 0.0f, -18.0f));
 		gameObjects.push_back(collidableBox7);
 		//No.8
-		GameObject *collidableBox8 = new GameObject(glm::vec3(-10.0f, 0.0f, -18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox8 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox8->setTexture("crateTex.bmp");
 		collidableBox8->setMaterial(material);
 		collidableBox8->setMesh("cube.obj");
@@ -336,7 +329,7 @@ void Scene::loadScene()
 		gameObjects.push_back(collidableBox8);
 	//Center Left Crates - x3 On Floor...
 		//No.9
-		GameObject *collidableBox9 = new GameObject(glm::vec3(-18.0f, 0.0f, -4.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox9 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox9->setTexture("crateTex.bmp");
 		collidableBox9->setMaterial(material);
 		collidableBox9->setMesh("cube.obj");
@@ -344,7 +337,7 @@ void Scene::loadScene()
 		collidableBox9->addObjectInstance(glm::vec3(-18.0f, 0.0f, -4.0f));
 		gameObjects.push_back(collidableBox9);
 		//No.10
-		GameObject *collidableBox10 = new GameObject(glm::vec3(-18.0f, 0.0f, 0.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox10 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox10->setTexture("crateTex.bmp");
 		collidableBox10->setMaterial(material);
 		collidableBox10->setMesh("cube.obj");
@@ -352,7 +345,7 @@ void Scene::loadScene()
 		collidableBox10->addObjectInstance(glm::vec3(-18.0f, 0.0f, 0.0f));
 		gameObjects.push_back(collidableBox10);
 		//No.11
-		GameObject *collidableBox11 = new GameObject(glm::vec3(-14.0f, 0.0f, 0.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox11 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox11->setTexture("crateTex.bmp");
 		collidableBox11->setMaterial(material);
 		collidableBox11->setMesh("cube.obj");
@@ -361,7 +354,7 @@ void Scene::loadScene()
 		gameObjects.push_back(collidableBox11);
 	//Center Right Crates - x3 Stacked...
 		//No.12
-		GameObject *collidableBox12 = new GameObject(glm::vec3(18.0f, 0.0f, 4.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox12 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox12->setTexture("crateTex.bmp");
 		collidableBox12->setMaterial(material);
 		collidableBox12->setMesh("cube.obj");
@@ -369,7 +362,7 @@ void Scene::loadScene()
 		collidableBox12->addObjectInstance(glm::vec3(18.0f, 0.0f, 4.0f));
 		gameObjects.push_back(collidableBox12);
 		//No.13
-		GameObject *collidableBox13 = new GameObject(glm::vec3(18.0f, 0.0f, 0.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox13 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox13->setTexture("crateTex.bmp");
 		collidableBox13->setMaterial(material);
 		collidableBox13->setMesh("cube.obj");
@@ -377,7 +370,7 @@ void Scene::loadScene()
 		collidableBox13->addObjectInstance(glm::vec3(18.0f, 0.0f, 0.0f));
 		gameObjects.push_back(collidableBox13);
 		//No.14
-		GameObject *collidableBox14 = new GameObject(glm::vec3(18.0f, 4.0f, 4.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox14 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox14->setTexture("crateTex.bmp");
 		collidableBox14->setMaterial(material);
 		collidableBox14->setMesh("cube.obj");
@@ -386,7 +379,7 @@ void Scene::loadScene()
 		gameObjects.push_back(collidableBox14);
 	//Front Right Crates - x4 On Floor...
 		//No.15
-		GameObject *collidableBox15 = new GameObject(glm::vec3(18.0f, 0.0f, 18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox15 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox15->setTexture("crateTex.bmp");
 		collidableBox15->setMaterial(material);
 		collidableBox15->setMesh("cube.obj");
@@ -394,7 +387,7 @@ void Scene::loadScene()
 		collidableBox15->addObjectInstance(glm::vec3(18.0f, 0.0f, 18.0f));
 		gameObjects.push_back(collidableBox15);
 		//No.16
-		GameObject *collidableBox16 = new GameObject(glm::vec3(18.0f, 0.0f, 14.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox16 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox16->setTexture("crateTex.bmp");
 		collidableBox16->setMaterial(material);
 		collidableBox16->setMesh("cube.obj");
@@ -402,7 +395,7 @@ void Scene::loadScene()
 		collidableBox16->addObjectInstance(glm::vec3(18.0f, 0.0f, 14.0f));
 		gameObjects.push_back(collidableBox16);
 		//No.17
-		GameObject *collidableBox17 = new GameObject(glm::vec3(14.0f, 0.0f, 18.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox17 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox17->setTexture("crateTex.bmp");
 		collidableBox17->setMaterial(material);
 		collidableBox17->setMesh("cube.obj");
@@ -410,7 +403,7 @@ void Scene::loadScene()
 		collidableBox17->addObjectInstance(glm::vec3(14.0f, 0.0f, 18.0f));
 		gameObjects.push_back(collidableBox17);
 		//No.18
-		GameObject *collidableBox18 = new GameObject(glm::vec3(14.0f, 0.0f, 14.0f), glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
+		GameObject *collidableBox18 = new GameObject(glm::vec3(2, 2, 2), glm::vec3(NULL, NULL, NULL));
 		collidableBox18->setTexture("crateTex.bmp");
 		collidableBox18->setMaterial(material);
 		collidableBox18->setMesh("cube.obj");
@@ -422,7 +415,7 @@ void Scene::loadScene()
 
 
 	//Ground Planes
-	GameObject *groundPlane = new GameObject(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
+	GameObject *groundPlane = new GameObject(glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
 	groundPlane->setTexture("concrete.bmp");
 	groundPlane->setMaterial(material);
 	groundPlane->setMesh("cube.obj");
@@ -432,7 +425,7 @@ void Scene::loadScene()
 
 
 	//Roof Planes
-	GameObject *roofPlane = new GameObject(glm::vec3(0.0f, 13.0f, 0.0f), glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
+	GameObject *roofPlane = new GameObject(glm::vec3(20, 0.1, 20), glm::vec3(NULL, NULL, NULL));
 	roofPlane->setTexture("concrete.bmp");
 	roofPlane->setMaterial(material);
 	roofPlane->setMesh("cube.obj");
@@ -443,7 +436,7 @@ void Scene::loadScene()
 
 	
 	//Left Wall Planes
-	GameObject *wall = new GameObject(glm::vec3(-20.1f, 5.5f, 0.0f), glm::vec3(0.1f, 7.5f, 10.0f), glm::vec3(NULL, NULL, NULL));
+	GameObject *wall = new GameObject(glm::vec3(0.1f, 7.5f, 10.0f), glm::vec3(NULL, NULL, NULL));
 	wall->setTexture("brickwall.bmp");
 	wall->setMaterial(material);
 	wall->setMesh("cube.obj");
@@ -452,7 +445,7 @@ void Scene::loadScene()
 	wall->addObjectInstance(glm::vec3(-20.1f, 5.5f, -10.0f));
 	gameObjects.push_back(wall);
 	//Right Wall Planes
-	GameObject *wall2 = new GameObject(glm::vec3(20.1f, 5.5f, 0.0f), glm::vec3(0.1f, 7.5f, 10.0f), glm::vec3(NULL, 1.0f, NULL), 180.0f);
+	GameObject *wall2 = new GameObject(glm::vec3(0.1f, 7.5f, 10.0f), glm::vec3(NULL, 1.0f, NULL), 180.0f);
 	wall2->setTexture("brickwall.bmp");
 	wall2->setMaterial(material);
 	wall2->setMesh("cube.obj");
@@ -461,7 +454,7 @@ void Scene::loadScene()
 	wall2->addObjectInstance(glm::vec3(20.1f, 5.5f, -10.0f));
 	gameObjects.push_back(wall2);
 	//Front Wall Planes
-	GameObject *wall3 = new GameObject(glm::vec3(0.0f, 5.5f, -20.1f), glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
+	GameObject *wall3 = new GameObject(glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
 	wall3->setTexture("brickwall.bmp");
 	wall3->setMaterial(material);
 	wall3->setMesh("cube.obj");
@@ -470,7 +463,7 @@ void Scene::loadScene()
 	wall3->addObjectInstance(glm::vec3(-10.0f, 5.5f, -20.1f));
 	gameObjects.push_back(wall3);
 	//Rear Wall Planes
-	GameObject *wall4 = new GameObject(glm::vec3(0.0f, 5.5f, 20.1f), glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
+	GameObject *wall4 = new GameObject(glm::vec3(10.0f, 7.5f, 0.1f), glm::vec3(NULL, NULL, NULL));
 	wall4->setTexture("brickwall.bmp");
 	wall4->setMaterial(material);
 	wall4->setMesh("cube.obj");
@@ -481,7 +474,7 @@ void Scene::loadScene()
 
 
 	//Gameplay Collectable
-	collectable = new GameObject(glm::vec3(-12.0f, 1.5f, -18.0f), glm::vec3(0.5, 1.05, 0.5), glm::vec3(0.0f, 1.0f, 0.0f), -135.0f);
+	collectable = new GameObject(glm::vec3(0.5, 1.05, 0.5), glm::vec3(0.0f, 1.0f, 0.0f), -135.0f);
 	collectable->setTexture("secretFiles.bmp");
 	collectable->setMaterial(material);
 	collectable->setMesh("cube.obj");
@@ -532,5 +525,4 @@ void Scene::loadScene()
 	Sprinkler->addtCollidableObjects(collidableBox17);
 	Sprinkler->addtCollidableObjects(collidableBox18);
 	Sprinkler->addtCollidableObjects(groundPlane);
-
 }

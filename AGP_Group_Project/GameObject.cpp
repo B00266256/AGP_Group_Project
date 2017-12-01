@@ -1,14 +1,21 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota)
+GameObject::GameObject()
+{
+	scaling = glm::vec3(1.0f,1.0f,1.0f);
+	rotation = glm::vec3(0.0f,0.0f,0.0f);
+	rotationInDeg = 0.0f;
+}
+
+GameObject::GameObject(glm::vec3 scale, glm::vec3 rota)
 {
 	scaling = scale;
 	rotation = rota;
 	rotationInDeg = 0.0f;
 }
 
-GameObject::GameObject(glm::vec3 pos, glm::vec3 scale, glm::vec3 rota, float deg)
+GameObject::GameObject(glm::vec3 scale, glm::vec3 rota, float deg)
 {
 	scaling = scale;
 	rotation = rota;
@@ -20,15 +27,11 @@ void GameObject::initAABB()
 	aabb = new AABB(positions, scaling);
 }
 
-
-
 void GameObject::addObjectInstance(glm::vec3 pos)
 {
 	positions.push_back(pos);
 	numberOfInstances++;
 }
-
-
 
 void GameObject::setMesh(char* objectFile)
 {
@@ -42,7 +45,6 @@ void GameObject::setMesh(char* objectFile)
 
 	mesh = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), size, indices.data());
 }
-
 
 // Sets
 void GameObject::setTexture(char* textureFile) { texture = TextureUtils::loadBitmap(textureFile); }
